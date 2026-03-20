@@ -29,11 +29,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="text-sm tracking-wider">
-              <User2 /> Username
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          <SidebarLink icon={User2} label="Username"/>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>

@@ -30,10 +30,10 @@ export function Footer() {
 
           <div className="flex flex-col gap-2 text-sm ml-auto">
             <div className="flex items-center gap-3">
-              <Link href="#" aria-label="GitHub" className="text-muted-foreground hover:text-foreground">
+              <Link href="https://github.com/JoshKim310" target="_blank" aria-label="GitHub" className="text-muted-foreground hover:text-foreground">
                 <Github className="size-4" />
               </Link>
-              <Link href="#" aria-label="LinkedIn" className="text-muted-foreground hover:text-foreground">
+              <Link href="https://www.linkedin.com/in/josh-kimm/" target="_blank" aria-label="LinkedIn" className="text-muted-foreground hover:text-foreground">
                 <Linkedin className="size-4" />
               </Link>
             </div>
