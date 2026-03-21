@@ -23,6 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/shadcn/tooltip"
 import { LucideIcon, PanelLeftIcon } from "lucide-react"
+import Link from "next/link"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -466,7 +467,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button group/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&>span:last-child]:truncate",
+  "peer/menu-button group/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-active active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-active data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&>span:last-child]:truncate",
   {
     variants: {
       variant: {
@@ -675,16 +676,25 @@ function SidebarMenuSubButton({
 }
 
 interface SidebarLinkProps {
+  link: string;
   icon: LucideIcon | React.ComponentType<React.SVGProps<SVGSVGElement>>;
   label: string;
+  active?: boolean;
 }
 
-function SidebarLink({ icon: Icon, label }: SidebarLinkProps) {
+function SidebarLink({ link, icon: Icon, label, active = false }: SidebarLinkProps) {
     return (
       <SidebarMenuItem>
-        <SidebarMenuButton size="lg" className="button-state text-sm tracking-wider">
-          <Icon className="mr-2"/>
-          <span className="font-bold">{label}</span>
+        <SidebarMenuButton
+          asChild
+          size="lg"
+          className="button-state text-sm tracking-wider"
+          isActive={active}
+        >
+          <Link href={link} className="cursor-pointer flex w-full items-center group-data-[collapsible=icon]:justify-center">
+            <Icon />
+            <span className="font-bold group-data-[collapsible=icon]:hidden ml-1">{label}</span>
+          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     )

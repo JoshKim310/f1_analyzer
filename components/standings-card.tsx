@@ -12,7 +12,7 @@ type StandingRow = {
   teamName: string;
   teamColor: string;
   points: number;
-  wins: number;
+  wins: number | undefined;
   nameAcronym: string;
 }
 
@@ -49,8 +49,11 @@ export function StandingsCard({
               variant="outline"
               size="sm"
               type="single"
-              defaultValue="drivers"
-              onValueChange={(value) => setView(value)}
+              value={view}
+              onValueChange={(value) => {
+                if (!value) return;
+                setView(value);
+              }}
             >
               <ToggleGroupItem value="drivers"><DriverIcon /> Drivers</ToggleGroupItem>
               <ToggleGroupItem value="constructors"><Warehouse /> Constructors</ToggleGroupItem>
