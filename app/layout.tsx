@@ -4,17 +4,19 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/shad
 import { AppSidebar } from "@/components/app-sidebar";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { getNextRaceInfo } from "@/services/nextRace";
 
 export const metadata: Metadata = {
   title: "F1 Analyzer",
   description: "F1 race analytics dashboard",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const nextRace = await getNextRaceInfo();
   return (
     <html lang="en">
       <body 
@@ -22,7 +24,7 @@ export default function RootLayout({
       style={{
         ["--header-height" as string]: "72px",
       }} >
-        <Header />
+        <Header nextRace={nextRace} />
         <SidebarProvider className="flex-1 min-h-0">
           <AppSidebar/>
           <SidebarInset>

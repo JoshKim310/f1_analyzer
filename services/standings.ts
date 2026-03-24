@@ -1,6 +1,6 @@
 import { openF1Fetch } from "@/lib/openf1";
 
-type driverChampionshipData = {
+type DriverChampionshipData = {
   driver_number: number;
   position_current: number;
   points_current: number;
@@ -24,7 +24,7 @@ type Team = {
 
 export async function getCurrentStandings() {
   const [driverChampionshipData, driverData, sessionData, constructorData] = await Promise.all([
-    openF1Fetch("/championship_drivers?session_key=latest") as Promise<driverChampionshipData[]>,
+    openF1Fetch("/championship_drivers?session_key=latest") as Promise<DriverChampionshipData[]>,
     openF1Fetch("/drivers?session_key=latest") as Promise<Driver[]>,
     openF1Fetch(`/sessions?session_name=Race&year=${new Date().getFullYear()}`) as Promise<any>,
     openF1Fetch("/championship_teams?session_key=latest") as Promise<Team[]>,

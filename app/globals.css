@@ -145,3 +145,11 @@
     @apply text-white;
   }
 }
+
+@layer utilities {
+  .font-digital {
+    font-family: "Orbitron", sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+}
