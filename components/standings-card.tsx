@@ -1,12 +1,13 @@
 "use client";
-
+import Image from "next/image";
 import { useState } from "react";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "./shadcn/card";
 import { ToggleGroup, ToggleGroupItem } from "./shadcn/toggle-group";
 import { DriverIcon } from "@/public/DriverIcon";
 import { Trophy, Warehouse } from "lucide-react";
 
-type StandingRow = {
+type DriverStandingRow = {
+  driverNumber: number;
   position: number;
   fullName: string;
   teamName: string;
@@ -14,6 +15,27 @@ type StandingRow = {
   points: number;
   wins: number | undefined;
   nameAcronym: string;
+}
+
+type ConstructorStandingRow = {
+  position: number;
+  teamName: string;
+  points: number;
+  teamColor: string;
+}
+
+const TEAM_LOGO_ICONS: Record<string, string> = {
+  "Ferrari": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/ferrari/2026ferrarilogowhite.webp",
+  "Mercedes": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/mercedes/2026mercedeslogowhite.webp",
+  "Red Bull Racing": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/redbullracing/2026redbullracinglogowhite.webp",
+  "McLaren": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/mclaren/2026mclarenlogowhite.webp",
+  "Alpine": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/alpine/2026alpinelogowhite.webp",
+  "Aston Martin": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/astonmartin/2026astonmartinlogowhite.webp",
+  "Haas F1 Team": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/haasf1team/2026haasf1teamlogowhite.webp",
+  "Racing Bulls": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/racingbulls/2026racingbullslogowhite.webp",
+  "Williams": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/williams/2026williamslogowhite.webp",
+  "Cadillac": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/cadillac/2026cadillaclogowhite.webp",
+  "Audi": "https://media.formula1.com/image/upload/c_lfill,w_64/q_auto/v1740000001/common/f1/2026/audi/2026audilogowhite.webp",
 }
 
 const normalizeHex = (hex: string) => (hex?.startsWith("#") ? hex : `#${hex}`);
@@ -29,10 +51,12 @@ const hexToRgba = (hex: string, alpha: number) => {
 };
 
 export function StandingsCard({
-  standings,
+  driverStandings,
+  constructorStandings,
   className,
 }: {
-  standings: StandingRow[];
+  driverStandings: DriverStandingRow[];
+  constructorStandings: ConstructorStandingRow[];
   className?: string;
 }) {
   const [view, setView] = useState("drivers");
@@ -74,7 +98,7 @@ export function StandingsCard({
                   </tr>
                 </thead>
                 <tbody>
-                  {standings.map((row, idx) => {
+                  {driverStandings.map((row, idx) => {
                     const teamHex = normalizeHex(row.teamColor);
 
                     return (
@@ -107,8 +131,47 @@ export function StandingsCard({
               </table>
             </div>
           ) : (
-            <div className="text-center text-muted-foreground py-10">
-              Constructor standings coming soon!
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-muted-foreground border-b border-border">
+                  <tr className="p-2">
+                    <th className="w-12 text-center py-2 pl-0 pr-2">Pos</th>
+                    <th className="text-left py-2 pl-10">Team</th>
+                    <th className="w-16 text-center py-2">Pts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {constructorStandings.map((row, idx) => {
+                    const teamHex = normalizeHex(row.teamColor);
+                    const logoUrl = TEAM_LOGO_ICONS[row.teamName];
+                    return (
+                      <tr key={idx} className="border-b border-border/50">
+                        <td className="w-12 py-6 pl-0 pr-2 text-center font-semibold">{row.position}</td>
+                        <td className="py-6 pl-10 text-left font-semibold">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="inline-block h-5 w-1 rounded-sm shrink-0"
+                              style={{ backgroundColor: teamHex }}
+                              aria-hidden="true"
+                            />
+                            {logoUrl ? (
+                              <Image
+                                src={logoUrl}
+                                alt={`${row.teamName} logo`}
+                                width={24}
+                                height={24}
+                                className="h-6 w-6 shrink-0 object-contain"
+                              />
+                            ) : null}
+                            <span>{row.teamName}</span>
+                          </div>
+                        </td>
+                        <td className="w-16 py-6 text-center font-semibold">{row.points}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>
