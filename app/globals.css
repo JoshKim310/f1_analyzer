@@ -1,7 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@400;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
+@font-face {
+  font-family: "Orbitron-Regular";
+  src: local("Orbitron"),
+    url("/fonts/Orbitron-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Orbitron-Bold";
+  src: local("Orbitron Bold"),
+    url("/fonts/Orbitron-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Formula1-Bold";
+  src: url("/fonts/Formula1-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Formula1-Black";
+  src: url("/fonts/Formula1-Black.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TitilliumWeb-Bold";
+  src: url("/fonts/TitilliumWeb-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -49,8 +90,9 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  --font-sans: "Inter", sans-serif;
-  --font-heading: "Orbitron", sans-serif;
+  --font-sans: "TitilliumWeb-Bold", sans-serif;
+  --font-title: "Orbitron-Regular", sans-serif;
+  --font-heading: "Formula1-Bold", sans-serif;
 }
 
 :root {
