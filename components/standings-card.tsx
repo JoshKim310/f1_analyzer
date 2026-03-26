@@ -66,7 +66,7 @@ export function StandingsCard({
         <CardHeader className="px-6 pt-2">
           <CardTitle className="flex gap-2">
             <Trophy />
-            <span className="text-xl font-semibold">Standings</span>
+            <span className="font-heading text-xl">Standings</span>
           </CardTitle>
           <CardAction>
             <ToggleGroup
@@ -87,7 +87,7 @@ export function StandingsCard({
         <CardContent className="px-8">
           {view === "drivers" ? (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-base">
                 <thead className="text-muted-foreground border-b border-border">
                   <tr className="p-2">
                     <th className="text-center py-2 pr-4">Pos</th>
@@ -103,7 +103,7 @@ export function StandingsCard({
 
                     return (
                       <tr key={idx} className="border-b border-border/50">
-                        <td className="py-6 pr-4 text-center font-semibold">{row.position}</td>
+                        <td className="py-6 pr-4 text-center">{row.position}</td>
 
                         <td className="py-6 pr-4">
                           <div className="flex items-center gap-3">
@@ -117,13 +117,13 @@ export function StandingsCard({
                             >
                               {row.nameAcronym}
                             </span>
-                            <span className="text-left font-semibold">{row.fullName}</span>
+                            <span className="text-left">{row.fullName}</span>
                           </div>
                         </td>
 
-                        <td className="py-6 pr-4 font-semibold">{row.teamName}</td>
-                        <td className="py-6 pr-4 text-center font-semibold">{row.wins ?? "-"}</td>
-                        <td className="py-6 text-center font-semibold">{row.points}</td>
+                        <td className="py-6 pr-4">{row.teamName}</td>
+                        <td className="py-6 pr-4 text-center">{row.wins ?? "-"}</td>
+                        <td className="py-6 text-center">{row.points}</td>
                       </tr>
                     );
                   })}
@@ -132,7 +132,7 @@ export function StandingsCard({
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-base">
                 <thead className="text-muted-foreground border-b border-border">
                   <tr className="p-2">
                     <th className="w-12 text-center py-2 pl-0 pr-2">Pos</th>

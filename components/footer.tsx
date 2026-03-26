@@ -10,7 +10,7 @@ export function Footer() {
       <div className="px-20 py-6">
         <div className="flex flex-col gap-6 flex-row items-start justify-start">
           <div>
-            <h2 className="font-heading text-xl tracking-widest uppercase text-f1-red">F1 Analyzer</h2>
+            <h2 className="font-title text-xl tracking-widest uppercase text-f1-red">F1 Analyzer</h2>
             <p className="text-sm text-muted-foreground">Race analytics dashboard</p>
           </div>
 

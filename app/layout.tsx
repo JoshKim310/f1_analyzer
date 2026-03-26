@@ -4,11 +4,21 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/shad
 import { AppSidebar } from "@/components/app-sidebar";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { getNextRaceInfo } from "@/services/nextRace";
+import { getNextRaceInfo } from "@/services/sessionsData";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   title: "F1 Analyzer",
   description: "F1 race analytics dashboard",
+  openGraph: {
+    title: "F1 Analyzer",
+    description: "F1 race analytics dashboard",
+    url: siteUrl,
+    siteName: "F1 Analyzer",
+    type: "website",
+    locale: "en_US",
+  },
 };
 
 export default async function RootLayout({

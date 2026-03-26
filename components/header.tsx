@@ -1,5 +1,5 @@
 "use client"
-import { NextRaceInfo } from "@/services/nextRace"
+import { NextRaceInfo } from "@/services/sessionsData"
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { Calendar } from "lucide-react"
@@ -55,7 +55,7 @@ export function Header({ nextRace }: HeaderProps) {
         <header className="sticky top-0 z-50 h-[var(--header-height)] shrink-0 border-b border-border bg-background px-6 py-4">
           <div className="flex h-full items-center gap-20">
             <div>
-              <h1 className="font-heading text-2xl tracking-widest uppercase text-f1-red">F1 Analyzer</h1>
+              <h1 className="font-title text-2xl tracking-widest uppercase text-f1-red">F1 Analyzer</h1>
               <p className="text-sm text-muted-foreground">Race analytics dashboard</p>
             </div>
             
