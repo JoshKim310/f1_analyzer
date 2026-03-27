@@ -8,6 +8,9 @@ type Meeting = {
   country_flag: string;
   date_start: string;
   date_end: string;
+  meeting_official_name: string;
+  gmt_offset: string;
+  circuit_image: string;
 };
 
 type Session = {
@@ -29,10 +32,11 @@ type Driver = {
 };
 
 export type NextRaceInfo = {
-    meeting_name: string;
-    countryName: string;
-    countryFlag: string;
-    dateStart: string;
+  meeting_name: string;
+  countryName: string;
+  countryFlag: string;
+  dateStart: string;
+  gmtOffset: string;
 }
 
 export type RaceProgressInfo = {
@@ -48,12 +52,23 @@ export type RecentRaceResult = {
   round: number;
   dateStart: string;
   dateEnd: string;
+  grandPrixName: string;
   podium: {
     position: number;
     driverAcronym: string;
     time: string;
     teamColor: string;
   }[];
+};
+
+export type UpcomingRaceInfo = {
+  countryName: string;
+  countryFlag: string;
+  round: number;
+  dateStart: string;
+  dateEnd: string;
+  grandPrixName: string;
+  circuitImage: string;
 };
 
 function formatDuration(seconds: number) {
@@ -69,7 +84,17 @@ function normalizeTeamColor(teamColor?: string) {
 }
 
 const getMeetingsByYear = cache(async (year: number): Promise<Meeting[]> => {
-  return openF1Fetch(`/meetings?year=${year}`) as Promise<Meeting[]>;
+  const meetings = (await openF1Fetch(`/meetings?year=${year}`)) as Meeting[];
+  
+  return meetings.map((meeting) => 
+    meeting.country_name === "United States"
+      ? { ...meeting, country_name: meeting.meeting_name.replace(" Grand Prix", "") }
+      : meeting
+  );
+});
+
+const getRaceByMeetingKey = cache(async (meetingKey: number) => {
+  return openF1Fetch(`/sessions?meeting_key=${meetingKey}&session_name=Race`) as Promise<Session[]>;
 });
 
 function getChampionshipRaces(meetings: Meeting[]) {
@@ -82,7 +107,8 @@ function getChampionshipRaces(meetings: Meeting[]) {
 export async function getNextRaceInfo(): Promise<NextRaceInfo | null> {
   const year = new Date().getFullYear();
   const meetings = await getMeetingsByYear(year);
-  const nextMeeting = meetings.find((m) => new Date(m.date_start) > new Date());
+  const now = new Date();
+  const nextMeeting = meetings.find((m) => new Date(m.date_start) > now);
 
   if (!nextMeeting) {
     return null;
@@ -93,6 +119,7 @@ export async function getNextRaceInfo(): Promise<NextRaceInfo | null> {
     countryName: nextMeeting.country_name,
     countryFlag: nextMeeting.country_flag,
     dateStart: nextMeeting.date_start,
+    gmtOffset: nextMeeting.gmt_offset,
   };
 }
 
@@ -139,9 +166,7 @@ export async function getRecentRaceResults(
 
   return Promise.all(
     recent.map(async ({ race, round }) => {
-      const raceSessions = await openF1Fetch(
-        `/sessions?meeting_key=${race.meeting_key}&session_name=Race`
-      ) as Session[];
+      const raceSessions = await getRaceByMeetingKey(race.meeting_key);
       const raceSession = raceSessions[0];
 
       let podium: RecentRaceResult["podium"] = [];
@@ -183,8 +208,39 @@ export async function getRecentRaceResults(
       round,
       dateStart: race.date_start,
       dateEnd: race.date_end ?? race.date_start,
+      grandPrixName: race.meeting_official_name,
       podium,
       };
+    })
+  );
+}
+
+export async function getUpcomingRaces(
+  year = new Date().getFullYear(),
+  limit = 3
+): Promise<UpcomingRaceInfo[]> {
+  const meetings = await getMeetingsByYear(year);
+  const now = new Date();
+  const racesAscending = getChampionshipRaces(meetings).sort(
+    (a, b) => new Date(a.date_start).getTime() - new Date(b.date_start).getTime()
+  );
+
+  const upcoming = racesAscending
+    .map((race, index) => ({ race, round: index + 1 }))
+    .filter(({ race }) => new Date(race.date_start) > now)
+    .slice(0, limit);
+  
+  return (
+    upcoming.map( ({ race, round }) => {
+      return {
+        countryName: race.country_name,
+        countryFlag: race.country_flag,
+        round,
+        dateStart: race.date_start,
+        dateEnd: race.date_end,
+        grandPrixName: race.meeting_official_name,
+        circuitImage: race.circuit_image,
+      }
     })
   );
 }

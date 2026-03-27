@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "./shadcn/card";
 import { Calendar } from "lucide-react";
-import type { RaceProgressInfo, RecentRaceResult } from "@/services/sessionsData";
+import type { RaceProgressInfo, RecentRaceResult, UpcomingRaceInfo } from "@/services/sessionsData";
+import Image from "next/image";
 
 function formatRaceDateRange(dateStartIso: string, dateEndIso: string) {
   const start = new Date(dateStartIso);
@@ -30,10 +31,12 @@ export function SeasonOverviewCard({
   className,
   raceProgress,
   recentResults,
+  upcomingRaces,
 }: {
   className?: string;
   raceProgress: RaceProgressInfo;
   recentResults: RecentRaceResult[];
+  upcomingRaces: UpcomingRaceInfo[];
 }) {
     const { completedRaces, totalRaces } = raceProgress;
     const currentRound = totalRaces === 0 ? 0 : Math.min(completedRaces + 1, totalRaces);
@@ -78,31 +81,33 @@ export function SeasonOverviewCard({
               ) : (
                 recentResults.map((race) => (
                   <div key={`${race.round}-${race.dateStart}`} className="rounded-lg border border-border bg-muted/30 p-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={race.countryFlag}
-                          alt={race.countryName}
-                          className="h-4 w-6 rounded-sm object-cover"
-                        />
-                        <p className="text-base leading-none font-heading">{race.countryName}</p>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between pb-2">
+                      <p className="text-xs text-muted-foreground">ROUND {race.round}</p>
+                      <p className="text-xs text-muted-foreground font-pixel">
                         {formatRaceDateRange(race.dateStart, race.dateEnd)}
                       </p>
                     </div>
-                    <div className="mt-2 flex items-end justify-between gap-3">
-                      <p className="text-xs text-muted-foreground">Round {race.round}</p>
-
-                      <div className="ml-auto grid w-full max-w-[260px] grid-cols-3 gap-2">
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={race.countryFlag}
+                        alt={race.countryName}
+                        className="h-4 w-6 rounded-sm object-cover"
+                      />
+                      <p className="text-base leading-none font-heading">{race.countryName}</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground py-2">{race.grandPrixName}</p>
+                    <div className="flex items-end justify-between">
+                      <div className="ml-auto grid w-full max-w-[280px] grid-cols-3 gap-2">
                         {race.podium.map((placement) => (
                           <div
                             key={`${race.round}-${placement.position}`}
                             className="min-h-[40px] rounded-md border border-border bg-card px-2.5 py-1.5 text-[11px] leading-tight"
                           >
-                            <p className="font-semibold truncate">
-                              {getOrdinal(placement.position)}
-                              <span style={{ color: placement.teamColor }}>
+                            <p className="truncate">
+                              <span className="text-xs">
+                                {getOrdinal(placement.position)}
+                              </span>
+                              <span className="font-title" style={{ color: placement.teamColor }}>
                                 {" " + placement.driverAcronym}
                               </span>
                             </p>
@@ -110,6 +115,49 @@ export function SeasonOverviewCard({
                           </div>
                         ))}
                       </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+
+          <section>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Upcoming
+            </p>
+
+            <div className="mt-3 space-y-3">
+              {upcomingRaces.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No upcoming races.</p>
+              ) : (
+                upcomingRaces.map((race) => (
+                  <div key={`${race.round}-${race.dateStart}`} className="rounded-lg border border-border bg-muted/30 p-3">
+                    <div className="flex items-end justify-between gap-3 pb-2">
+                      <p className="text-xs text-muted-foreground">ROUND {race.round}</p>
+                      <p className="text-xs text-muted-foreground font-pixel">
+                        {formatRaceDateRange(race.dateStart, race.dateEnd)}
+                      </p>
+                    </div>
+                    <div className="flex justify-between">
+                      <div className="w-full min-w-0 pt-2">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <img
+                            src={race.countryFlag}
+                            alt={race.countryName}
+                            className="h-4 w-6 rounded-sm object-cover"
+                          />
+                          <p className="truncate text-base leading-none font-heading">{race.countryName}</p>
+                        </div>
+                        <p className="mt-2 truncate text-xs text-muted-foreground">{race.grandPrixName}</p>
+                      </div>
+                      <Image
+                        src={race.circuitImage}
+                        alt={race.grandPrixName}
+                        width={50}
+                        height={20}
+                        className="h-16 w-24 shrink-0 self-end rounded-md object-contain"
+                      />
                     </div>
                   </div>
                 ))

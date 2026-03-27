@@ -108,7 +108,7 @@ export function StandingsCard({
                         <td className="py-6 pr-4">
                           <div className="flex items-center gap-3">
                             <span
-                              className="inline-flex h-6 min-w-10 items-center justify-center rounded-md border px-2 text-xs font-semibold tracking-wide pointer-events-none select-none"
+                              className="inline-flex h-6 min-w-10 items-center justify-center rounded-md border px-2 text-[10px] font-title tracking-wide pointer-events-none select-none"
                               style={{
                                 color: teamHex,
                                 borderColor: hexToRgba(teamHex, 0.45),

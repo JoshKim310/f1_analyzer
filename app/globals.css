@@ -44,6 +44,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "KHInterferenceF1-Regular";
+  src: url("/fonts/KHInterferenceF1-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -93,6 +101,7 @@
   --font-sans: "TitilliumWeb-Bold", sans-serif;
   --font-title: "Orbitron-Regular", sans-serif;
   --font-heading: "Formula1-Bold", sans-serif;
+  --font-pixel: "KHInterferenceF1-Regular", sans-serif;
 }
 
 :root {
