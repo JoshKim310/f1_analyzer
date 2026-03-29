@@ -149,7 +149,7 @@ export function Header({ nextRace }: HeaderProps) {
                         <span className="text-muted-foreground px-1 text-[10px]">S</span>
                         </>
                       ) : (
-                      <span className="text-muted-foreground">In Progress</span>
+                      <span className="text-muted-foreground pb-2 pl-5">In Progress</span>
                       )}
                     </p>
                     <div className="pl-15 text-xs text-muted-foreground">
