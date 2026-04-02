@@ -13,7 +13,7 @@ type DriverStandingRow = {
   teamName: string;
   teamColor: string;
   points: number;
-  wins: number | undefined;
+  wins: number;
   nameAcronym: string;
 }
 

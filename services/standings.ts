@@ -1,60 +1,100 @@
-import { openF1Fetch } from "@/lib/openf1";
+import { db } from "@/db";
+import { constructor_standings_latest, driver_standings_latest, drivers_latest, session_results, sessions } from "@/db/schema";
+import { asc, desc, sql } from "drizzle-orm";
 
-type DriverChampionshipData = {
-  driver_number: number;
-  position_current: number;
-  points_current: number;
+export type DriverStanding = {
+  driverNumber: number;
+  position: number;
+  points: number;
+  wins: number;
+  fullName: string;
+  teamName: string;
+  teamColor: string;
+  nameAcronym: string;
 };
 
-type Driver = {
-  driver_number: number;
-  first_name: string;
-  last_name: string;
-  team_name: string;
-  team_colour: string;
-  name_acronym: string;
+export type ConstructorStanding = {
+  teamName: string;
+  position: number;
+  points: number;
+  teamColor: string;
 };
 
-type Team = {
-  team_name: string;
-  position_current: number;
-  points_current: number;
-  team_color: string;
+export type CurrentStandings = {
+  drivers: DriverStanding[];
+  constructors: ConstructorStanding[];
 };
 
-export async function getCurrentStandings() {
-  const [driverChampionshipData, driverData, sessionData, constructorData] = await Promise.all([
-    openF1Fetch("/championship_drivers?session_key=latest") as Promise<DriverChampionshipData[]>,
-    openF1Fetch("/drivers?session_key=latest") as Promise<Driver[]>,
-    openF1Fetch(`/sessions?session_name=Race&year=${new Date().getFullYear()}`) as Promise<any>,
-    openF1Fetch("/championship_teams?session_key=latest") as Promise<Team[]>,
-  ]);
+export async function getCurrentStandings(): Promise<CurrentStandings> {
+  const driverChampionshipData = await db
+    .select({
+      driver_number: driver_standings_latest.driver_number,
+      position_current: driver_standings_latest.position_current,
+      points_current: driver_standings_latest.points_current,
+    })
+    .from(driver_standings_latest)
+    .orderBy(asc(driver_standings_latest.position_current));
 
-  const completedRaces = sessionData.filter((s: any) => {return new Date(s.date_start) < new Date()});
+  const constructorChampionshipData = await db
+    .select({
+      team_name: constructor_standings_latest.team_name,
+      position_current: constructor_standings_latest.position_current,
+      points_current: constructor_standings_latest.points_current,
+    })
+    .from(constructor_standings_latest)
+    .orderBy(asc(constructor_standings_latest.position_current));
+
+  const driverData = await db
+    .select({
+      driver_number: drivers_latest.driver_number,
+      first_name: drivers_latest.first_name,
+      last_name: drivers_latest.last_name,
+      team_name: drivers_latest.team_name,
+      team_colour: drivers_latest.team_colour,
+      name_acronym: drivers_latest.name_acronym,
+    })
+    .from(drivers_latest);
+
+  const completedRaces = await db
+    .select({
+      session_key: sessions.session_key,
+    })
+    .from(sessions)
+    .where(
+      sql`
+        ${sessions.year} = extract(year from now())::int
+        and ${sessions.session_name} = 'Race'
+        and ${sessions.date_end}:: timestamptz < now()
+      `
+    );
 
   // Gets the session winner for each completed race
   const sessionResults = await Promise.all(
-    completedRaces.map(async(race: any) => {
-      const result = await openF1Fetch(
-        `/session_result?session_key=${race.session_key}&position=1`
-      );
-      return {
-        driverNumber: result[0].driver_number,
-      };
+    completedRaces.map(async (race) => {
+      const result = await db
+        .select({
+          driverNumber: session_results.driver_number,
+        })
+        .from(session_results)
+        .where(
+          sql` ${session_results.session_key} = ${race.session_key} and ${session_results.position} = 1`
+        );
+      return result[0]?.driverNumber;
     })
   );
-
+  console.log(completedRaces);
   // Count wins for each driver
   const winsByDriver = new Map<number, number>();
 
   for (const r of sessionResults) {
+    if (r == null) {
+      continue;
+    }
     winsByDriver.set(
-        r.driverNumber,
-        (winsByDriver.get(r.driverNumber) ?? 0) + 1
+        r,
+        (winsByDriver.get(r) ?? 0) + 1
     )
   }
-
-  console.log("Wins by Driver:", winsByDriver);
 
   // create lookups
   const driverMap = new Map(
@@ -64,30 +104,28 @@ export async function getCurrentStandings() {
     driverData.map((d) => [d.team_name, d.team_colour])
   );
   
-  const drivers = driverChampionshipData
-    .sort((a: any, b: any) => a.position_current - b.position_current)
-    .map((d: any) => {
+  const drivers: CurrentStandings["drivers"] = driverChampionshipData
+    .map((d) => {
       const driver = driverMap.get(d.driver_number);
 
       return {
         driverNumber: d.driver_number,
-        position: d.position_current,
-        points: d.points_current,
-        wins: winsByDriver.get(d.driver_number),
+        position: d.position_current ?? 0,
+        points: d.points_current ?? 0,
+        wins: winsByDriver.get(d.driver_number) ?? 0,
         fullName: driver ? `${driver.first_name} ${driver.last_name}` : "Unknown",
-        teamName: driver ? driver.team_name : "Unknown",
-        teamColor: driver ? driver.team_colour : "",
-        nameAcronym: driver ? driver.name_acronym : "Unknown",
+        teamName: driver?.team_name ?? "Unknown",
+        teamColor: driver?.team_colour ?? "",
+        nameAcronym: driver?.name_acronym ?? "Unknown",
       };
     });
 
-  const constructors = constructorData
-    .sort((a: any, b: any) => a.position_current - b.position_current)
-    .map((d: any) => {
+  const constructors: CurrentStandings["constructors"] = constructorChampionshipData
+    .map((d) => {
       return {
-      teamName: d.team_name,
-      position: d.position_current,
-      points: d.points_current,
+      teamName: d.team_name ?? "",
+      position: d.position_current ?? 0,
+      points: d.points_current ?? 0,
       teamColor: teamColorMap.get(d.team_name) ?? "",
       };      
     });

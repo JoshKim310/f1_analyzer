@@ -29,6 +29,34 @@
       "when": 1774782473593,
       "tag": "0003_flashy_multiple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774857601573,
+      "tag": "0004_heavy_master_mold",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1774858563318,
+      "tag": "0005_sharp_frightful_four",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1774865278209,
+      "tag": "0006_tough_tiger_shark",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1774865569258,
+      "tag": "0007_cynical_miek",
+      "breakpoints": true
     }
   ]
 }

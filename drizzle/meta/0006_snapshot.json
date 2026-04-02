@@ -1,0 +1,535 @@
+{
+  "id": "3ad78ae8-5492-4a43-8082-649713a41e67",
+  "prevId": "089d7852-1036-44cf-898b-02e8aaa229b2",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.constructor_championships": {
+      "name": "constructor_championships",
+      "schema": "",
+      "columns": {
+        "meeting_key": {
+          "name": "meeting_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points_current": {
+          "name": "points_current",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "points_start": {
+          "name": "points_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position_current": {
+          "name": "position_current",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position_start": {
+          "name": "position_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "session_key": {
+          "name": "session_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "team_name": {
+          "name": "team_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "constructor_championships_session_key_team_name_pk": {
+          "name": "constructor_championships_session_key_team_name_pk",
+          "columns": [
+            "session_key",
+            "team_name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.driver_championships": {
+      "name": "driver_championships",
+      "schema": "",
+      "columns": {
+        "driver_number": {
+          "name": "driver_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "meeting_key": {
+          "name": "meeting_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points_current": {
+          "name": "points_current",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points_start": {
+          "name": "points_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position_current": {
+          "name": "position_current",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position_start": {
+          "name": "position_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "session_key": {
+          "name": "session_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "driver_championships_session_key_driver_number_pk": {
+          "name": "driver_championships_session_key_driver_number_pk",
+          "columns": [
+            "session_key",
+            "driver_number"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.drivers": {
+      "name": "drivers",
+      "schema": "",
+      "columns": {
+        "driver_number": {
+          "name": "driver_number",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team_name": {
+          "name": "team_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team_colour": {
+          "name": "team_colour",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "headshot_url": {
+          "name": "headshot_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_acronym": {
+          "name": "name_acronym",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meeting_key": {
+          "name": "meeting_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "session_key": {
+          "name": "session_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.session_results": {
+      "name": "session_results",
+      "schema": "",
+      "columns": {
+        "dnf": {
+          "name": "dnf",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "dns": {
+          "name": "dns",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "dsq": {
+          "name": "dsq",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "driver_number": {
+          "name": "driver_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duration": {
+          "name": "duration",
+          "type": "numeric(10, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gap_to_leader": {
+          "name": "gap_to_leader",
+          "type": "numeric(10, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "number_of_laps": {
+          "name": "number_of_laps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meeting_key": {
+          "name": "meeting_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "session_key": {
+          "name": "session_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "session_results_session_key_driver_number_pk": {
+          "name": "session_results_session_key_driver_number_pk",
+          "columns": [
+            "session_key",
+            "driver_number"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sessions": {
+      "name": "sessions",
+      "schema": "",
+      "columns": {
+        "session_key": {
+          "name": "session_key",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "circuit_key": {
+          "name": "circuit_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "circuit_short_name": {
+          "name": "circuit_short_name",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country_code": {
+          "name": "country_code",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country_name": {
+          "name": "country_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_start": {
+          "name": "date_start",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_end": {
+          "name": "date_end",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gmt_offset": {
+          "name": "gmt_offset",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meeting_key": {
+          "name": "meeting_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "session_name": {
+          "name": "session_name",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "session_type": {
+          "name": "session_type",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {
+    "public.constructor_standings_latest": {
+      "columns": {
+        "session_key": {
+          "name": "session_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "team_name": {
+          "name": "team_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "points_current": {
+          "name": "points_current",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "points_start": {
+          "name": "points_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position_current": {
+          "name": "position_current",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position_start": {
+          "name": "position_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "definition": "select \"constructor_championships\".\"session_key\", \"constructor_championships\".\"team_name\", \"constructor_championships\".\"points_current\", \"constructor_championships\".\"points_start\", \"constructor_championships\".\"position_current\", \"constructor_championships\".\"position_start\" from \"constructor_championships\" inner join (select \"session_key\" from \"sessions\" where \n          \"sessions\".\"year\" = extract(year from now())::int\n          and \"sessions\".\"date_end\":: timestamptz < now()\n         order by \"sessions\".\"date_start\"::timestamptz desc limit 1) \"latest_session\" on \"constructor_championships\".\"session_key\" = \"latest_session\".\"session_key\"",
+      "name": "constructor_standings_latest",
+      "schema": "public",
+      "isExisting": false,
+      "materialized": false
+    },
+    "public.driver_standings_latest": {
+      "columns": {
+        "session_key": {
+          "name": "session_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "driver_number": {
+          "name": "driver_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points_current": {
+          "name": "points_current",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points_start": {
+          "name": "points_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position_current": {
+          "name": "position_current",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position_start": {
+          "name": "position_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "definition": "select \"driver_championships\".\"session_key\", \"driver_championships\".\"driver_number\", \"driver_championships\".\"points_current\", \"driver_championships\".\"points_start\", \"driver_championships\".\"position_current\", \"driver_championships\".\"position_start\" from \"driver_championships\" inner join (select \"session_key\" from \"sessions\" where \n          \"sessions\".\"year\" = extract(year from now())::int\n          and \"sessions\".\"date_end\":: timestamptz < now()\n         order by \"sessions\".\"date_start\"::timestamptz desc limit 1) \"latest_session\" on \"driver_championships\".\"session_key\" = \"latest_session\".\"session_key\"",
+      "name": "driver_standings_latest",
+      "schema": "public",
+      "isExisting": false,
+      "materialized": false
+    },
+    "public.drivers_latest": {
+      "columns": {
+        "session_key": {
+          "name": "session_key",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "driver_number": {
+          "name": "driver_number",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "headshot_url": {
+          "name": "headshot_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team_name": {
+          "name": "team_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team_colour": {
+          "name": "team_colour",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name_acronym": {
+          "name": "name_acronym",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "definition": "select \"drivers\".\"session_key\", \"drivers\".\"driver_number\", \"drivers\".\"first_name\", \"drivers\".\"last_name\", \"drivers\".\"headshot_url\", \"drivers\".\"team_name\", \"drivers\".\"team_colour\", \"drivers\".\"name_acronym\" from \"drivers\" inner join (select \"session_key\" from \"sessions\" where \n          \"sessions\".\"year\" = extract(year from now())::int\n          and \"sessions\".\"date_end\":: timestamptz < now()\n         order by \"sessions\".\"date_start\"::timestamptz desc limit 1) \"latest_session\" on \"drivers\".\"session_key\" = \"latest_session\".\"session_key\"",
+      "name": "drivers_latest",
+      "schema": "public",
+      "isExisting": false,
+      "materialized": false
+    }
+  },
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
