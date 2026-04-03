@@ -7,6 +7,7 @@ import { seedChampionships, seedChampionshipsFullHistory } from "./seeds/champio
 import { seedDrivers, seedDriversFullHistory } from "./seeds/drivers";
 import { seedSessionResults, seedSessionResultsFullHistory } from "./seeds/session-results";
 import { seedSessions, seedSessionsFullHistory } from "./seeds/sessions";
+import { seedMeetings, seedMeetingsFullHistory } from "./seeds/meetings";
 
 function parseArgs() {
 	const arg = process.argv[2];
@@ -48,6 +49,7 @@ async function runSeed() {
 			await seedDriversFullHistory({ db, log });
 			await seedSessionResultsFullHistory({ db, log });
 			await seedChampionshipsFullHistory(db, log);
+			await seedMeetingsFullHistory({ db, log });
 			log("finished full-history seed");
 			return;
 		}
@@ -56,11 +58,8 @@ async function runSeed() {
 			log(`starting year ${year}`);
 			await seedSessions({ db, year, log });
 			await seedDrivers({ db, year, log });
-			if (mode === "resultsFull") {
-				await seedSessionResultsFullHistory({ db, log });
-			} else {
-				await seedSessionResults({ db, year, log });
-			}
+			await seedSessionResults({ db, year, log });
+			await seedMeetings({ db, year, log });
 			log(`finished year ${year}`);
 		}
 

@@ -57,6 +57,27 @@
       "when": 1774865569258,
       "tag": "0007_cynical_miek",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1775114455061,
+      "tag": "0008_useful_sumo",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1775122587226,
+      "tag": "0009_mean_imperial_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1775122647335,
+      "tag": "0010_rare_daimon_hellstrom",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,8 @@
-import { openF1Fetch } from "@/lib/openf1";
+import { db } from "@/db";
+import { meetings, session_results, sessions, drivers } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 import { cache } from "react";
+import { getChampionshipRaces } from "./currentSeasonExceptions";
 
 type Meeting = {
   meeting_key: number;
@@ -78,15 +81,24 @@ function formatDuration(seconds: number) {
   return `${hrs}:${String(mins).padStart(2, "0")}:${secs}`;
 }
 
-function normalizeTeamColor(teamColor?: string) {
+function normalizeTeamColor(teamColor?: string | null) {
   if (!teamColor) return "";
   return teamColor.startsWith("#") ? teamColor : `#${teamColor}`;
 }
 
+function toNumber(value: string | number | null | undefined): number | undefined {
+  if (value == null) return undefined;
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 const getMeetingsByYear = cache(async (year: number): Promise<Meeting[]> => {
-  const meetings = (await openF1Fetch(`/meetings?year=${year}`)) as Meeting[];
-  
-  return meetings.map((meeting) => 
+  const meetingsByYear = await db
+    .select()
+    .from(meetings)
+    .where(eq(meetings.year, year))
+
+  return meetingsByYear.map((meeting) => 
     meeting.country_name === "United States"
       ? { ...meeting, country_name: meeting.meeting_name.replace(" Grand Prix", "") }
       : meeting
@@ -94,21 +106,23 @@ const getMeetingsByYear = cache(async (year: number): Promise<Meeting[]> => {
 });
 
 const getRaceByMeetingKey = cache(async (meetingKey: number) => {
-  return openF1Fetch(`/sessions?meeting_key=${meetingKey}&session_name=Race`) as Promise<Session[]>;
+  return db
+    .select()
+    .from(sessions)
+    .where(
+      sql`
+        ${sessions.meeting_key} = ${meetingKey}
+        and ${sessions.session_name} = 'Race'
+      `
+    )
 });
-
-function getChampionshipRaces(meetings: Meeting[]) {
-  return meetings
-    .filter((m) => m.meeting_name !== "Pre-Season Testing")
-    .filter((m) => m.meeting_name !== "Saudi Arabian Grand Prix")
-    .filter((m) => m.meeting_name !== "Bahrain Grand Prix");
-}
 
 export async function getNextRaceInfo(): Promise<NextRaceInfo | null> {
   const year = new Date().getFullYear();
   const meetings = await getMeetingsByYear(year);
+  const races = getChampionshipRaces(meetings);
   const now = new Date();
-  const nextMeeting = meetings.find((m) => new Date(m.date_start) > now);
+  const nextMeeting = races.find((m) => new Date(m.date_start) > now);
 
   if (!nextMeeting) {
     return null;
@@ -172,34 +186,48 @@ export async function getRecentRaceResults(
       let podium: RecentRaceResult["podium"] = [];
 
       if (raceSession?.session_key) {
-        const [results, drivers] = await Promise.all([
-          openF1Fetch(`/session_result?session_key=${raceSession.session_key}`) as Promise<SessionResult[]>,
-          openF1Fetch(`/drivers?session_key=${raceSession.session_key}`) as Promise<Driver[]>,
+        const [results, driver] = await Promise.all([
+          db 
+            .select()
+            .from(session_results)
+            .where(eq(session_results.session_key, raceSession.session_key)),
+          db
+            .select()
+            .from(drivers)
+            .where(eq(drivers.session_key, raceSession.session_key)),
         ]);
 
         const acronymByDriver = new Map(
-          drivers.map((d) => [d.driver_number, d.name_acronym])
+          driver.map((d) => [d.driver_number, d.name_acronym])
         );
         const teamColorByDriver = new Map(
-          drivers.map((d) => [d.driver_number, normalizeTeamColor(d.team_colour)])
+          driver.map((d) => [d.driver_number, normalizeTeamColor(d.team_colour)])
         );
 
         podium = results
-          .filter((r) => r.position >= 1 && r.position <= 3)
+          .filter(
+            (r): r is typeof r & { position: number } =>
+              typeof r.position === "number" && r.position >= 1 && r.position <= 3
+          )
           .sort((a, b) => a.position - b.position)
-          .map((r) => ({
-            position: r.position,
-            driverAcronym: acronymByDriver.get(r.driver_number) ?? String(r.driver_number),
-            teamColor: teamColorByDriver.get(r.driver_number) ?? "",
-            time:
-              r.position === 1 && typeof r.duration === "number"
-                ? formatDuration(r.duration)
-                : typeof r.gap_to_leader === "number"
-                  ? `+${r.gap_to_leader.toFixed(3)}s`
-                  : typeof r.duration === "number"
-                    ? formatDuration(r.duration)
-                    : "-",
-          }));
+          .map((r) => {
+            const duration = toNumber(r.duration);
+            const gapToLeader = toNumber(r.gap_to_leader);
+
+            return {
+              position: r.position,
+              driverAcronym: acronymByDriver.get(r.driver_number) ?? String(r.driver_number),
+              teamColor: teamColorByDriver.get(r.driver_number) ?? "",
+              time:
+                r.position === 1 && typeof duration === "number"
+                  ? formatDuration(duration)
+                  : typeof gapToLeader === "number"
+                    ? `+${gapToLeader.toFixed(3)}s`
+                    : typeof duration === "number"
+                      ? formatDuration(duration)
+                      : "-",
+            };
+          });
       }
 
       return {

@@ -18,6 +18,8 @@ type OpenF1Session = {
   year: number | null;
 };
 
+type OpenF1SessionWithMeetingKey = OpenF1Session & { meeting_key: number };
+
 const INSERT_CHUNK_SIZE = 1500;
 
 function chunkArray<T>(rows: T[], chunkSize: number) {
@@ -28,7 +30,7 @@ function chunkArray<T>(rows: T[], chunkSize: number) {
   return chunks;
 }
 
-function mapSessionRow(row: OpenF1Session, fallbackYear: number | null) {
+function mapSessionRow(row: OpenF1SessionWithMeetingKey, fallbackYear: number | null) {
   return {
     session_key: row.session_key,
     circuit_key: row.circuit_key,
@@ -65,13 +67,14 @@ export async function seedSessionsFullHistory({ db, log }: Omit<SeedContext, "ye
     return { inserted: 0 };
   }
 
-  await insertSessionRows(
-    db,
-    rows.map((row) => mapSessionRow(row, null))
+  const mappedRows = rows.filter(
+    (row): row is OpenF1SessionWithMeetingKey => row.meeting_key != null
   );
 
-  log(`sessions(full): inserted ${rows.length} rows from base endpoint`);
-  return { inserted: rows.length };
+  await insertSessionRows(db, mappedRows.map((row) => mapSessionRow(row, null)));
+
+  log(`sessions(full): inserted ${mappedRows.length} rows from base endpoint`);
+  return { inserted: mappedRows.length };
 }
 
 export async function seedSessions({ db, year, log }: SeedContext) {
@@ -82,11 +85,12 @@ export async function seedSessions({ db, year, log }: SeedContext) {
     return { inserted: 0 };
   }
 
-  await insertSessionRows(
-    db,
-    rows.map((row) => mapSessionRow(row, year))
+  const mappedRows = rows.filter(
+    (row): row is OpenF1SessionWithMeetingKey => row.meeting_key != null
   );
 
-  log(`sessions: upserted ${rows.length} rows for ${year}`);
-  return { inserted: rows.length };
+  await insertSessionRows(db, mappedRows.map((row) => mapSessionRow(row, year)));
+
+  log(`sessions: upserted ${mappedRows.length} rows for ${year}`);
+  return { inserted: mappedRows.length };
 }

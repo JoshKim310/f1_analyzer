@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { constructor_standings_latest, driver_standings_latest, drivers_latest, session_results, sessions } from "@/db/schema";
-import { asc, desc, sql } from "drizzle-orm";
+import { asc, sql } from "drizzle-orm";
 
 export type DriverStanding = {
   driverNumber: number;

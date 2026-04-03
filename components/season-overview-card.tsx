@@ -156,11 +156,12 @@ export function SeasonOverviewCard({
                         alt={race.grandPrixName}
                         width={50}
                         height={20}
-                        className="h-16 w-24 shrink-0 self-end rounded-md object-contain"
+                        className={`h-16 w-24 shrink-0 self-end rounded-md object-contain invert`}
                       />
                     </div>
                   </div>
-                ))
+                  )
+                )
               )}
             </div>
           </section>

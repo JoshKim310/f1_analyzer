@@ -7,13 +7,12 @@ import {
   numeric,
   boolean,
   pgView,
-  point,
 } from "drizzle-orm/pg-core";
 
 export const drivers = pgTable(
   "drivers",
   {
-    driver_number: integer("driver_number").primaryKey().notNull(),
+    driver_number: integer("driver_number").notNull(),
     first_name: varchar("first_name", { length: 50 }),
     last_name: varchar("last_name", { length: 50 }),
     team_name: varchar("team_name", { length: 100 }),
@@ -22,7 +21,11 @@ export const drivers = pgTable(
     name_acronym: varchar("name_acronym", { length: 3 }),
     meeting_key: integer("meeting_key").notNull(),
     session_key: integer("session_key").notNull(),
-});
+  },
+  (table) => ({
+    primary_key: primaryKey({ columns: [table.driver_number, table.session_key] }),
+  })
+);
 
 export const sessions = pgTable(
   "sessions",
@@ -92,6 +95,28 @@ export const constructor_championships = pgTable(
     primary_key: primaryKey({ columns: [table.session_key, table.team_name]}),
   })
 );
+
+export const meetings = pgTable(
+  "meetings",
+  {
+    meeting_key: integer("meeting_key").primaryKey().notNull(),
+    circuit_key: integer("circuit_key").notNull(),
+    circuit_image: varchar("circuit_image", { length: 255 }).notNull(),
+    circuit_info_url: varchar("circuit_info_url", { length: 255 }).notNull(),
+    circuit_short_name: varchar("circuit_short_name", { length: 50 }).notNull(),
+    circuit_type: varchar("circuit_type", { length: 50 }).notNull(),
+    country_code: varchar("country_code", { length: 3 }).notNull(),
+    country_flag: varchar("country_flag", { length: 255 }).notNull(),
+    country_name: varchar("country_name", { length: 50 }).notNull(),
+    date_end: varchar("date_end", { length: 50 }).notNull(),
+    date_start: varchar("date_start", { length: 50 }).notNull(),
+    gmt_offset: varchar("gmt_offset", { length: 10 }).notNull(),
+    location: varchar("location", { length: 50 }).notNull(),
+    meeting_name: varchar("meeting_name", { length: 100 }).notNull(),
+    meeting_official_name: varchar("meeting_official_name", { length: 255 }).notNull(),
+    year: integer("year").notNull(),
+  }
+)
 
 export const driver_standings_latest = pgView(
   "driver_standings_latest",

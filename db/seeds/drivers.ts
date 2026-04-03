@@ -11,8 +11,10 @@ type OpenF1Driver = {
   headshot_url: string | null;
   name_acronym: string | null;
   meeting_key?: number | null;
-  session_key?: number | null;
+  session_key: number;
 };
+
+type OpenF1DriverWithMeetingKey = OpenF1Driver & { meeting_key: number };
 
 const INSERT_CHUNK_SIZE = 500;
 
@@ -24,7 +26,7 @@ function chunkArray<T>(rows: T[], chunkSize: number) {
   return chunks;
 }
 
-function mapDriverRow(row: OpenF1Driver) {
+function mapDriverRow(row: OpenF1DriverWithMeetingKey) {
   return {
     driver_number: row.driver_number,
     first_name: row.first_name,
@@ -33,8 +35,8 @@ function mapDriverRow(row: OpenF1Driver) {
     team_colour: row.team_colour,
     headshot_url: row.headshot_url,
     name_acronym: row.name_acronym,
-    meeting_key: row.meeting_key ?? null,
-    session_key: row.session_key ?? null,
+    meeting_key: row.meeting_key,
+    session_key: row.session_key,
   };
 }
 
@@ -44,7 +46,7 @@ async function insertDriverRows(db: SeedContext["db"], rows: ReturnType<typeof m
       .insert(drivers)
       .values(chunk)
       .onConflictDoNothing({
-        target: drivers.driver_number,
+        target: [drivers.driver_number, drivers.session_key],
       });
   }
 }
@@ -57,13 +59,17 @@ export async function seedDriversFullHistory({ db, log }: Omit<SeedContext, "yea
     return { inserted: 0 };
   }
 
-  await insertDriverRows(
-    db,
-    rows.map(mapDriverRow)
+  const mappedRows = rows.filter(
+    (row): row is OpenF1DriverWithMeetingKey => row.meeting_key != null
   );
 
-  log(`drivers(full): inserted ${rows.length} rows from base endpoint`);
-  return { inserted: rows.length };
+  await insertDriverRows(
+    db,
+    mappedRows.map(mapDriverRow)
+  );
+
+  log(`drivers(full): inserted ${mappedRows.length} rows from base endpoint`);
+  return { inserted: mappedRows.length };
 }
 
 export async function seedDrivers({ db, year, log }: SeedContext) {
@@ -74,11 +80,15 @@ export async function seedDrivers({ db, year, log }: SeedContext) {
     return { inserted: 0 };
   }
 
-  await insertDriverRows(
-    db,
-    rows.map(mapDriverRow)
+  const mappedRows = rows.filter(
+    (row): row is OpenF1DriverWithMeetingKey => row.meeting_key != null
   );
 
-  log(`drivers: inserted ${rows.length} rows from latest snapshot`);
-  return { inserted: rows.length };
+  await insertDriverRows(
+    db,
+    mappedRows.map(mapDriverRow)
+  );
+
+  log(`drivers: inserted ${mappedRows.length} rows from latest snapshot`);
+  return { inserted: mappedRows.length };
 }
