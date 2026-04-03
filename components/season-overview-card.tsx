@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "./shadcn/card";
 import { Calendar } from "lucide-react";
-import type { RaceProgressInfo, RecentRaceResult, UpcomingRaceInfo } from "@/services/sessionsData";
+import type { RaceProgressInfo, RecentRaceResult, UpcomingRaceInfo } from "@/services/sessions-data";
 import Image from "next/image";
 
 function formatRaceDateRange(dateStartIso: string, dateEndIso: string) {

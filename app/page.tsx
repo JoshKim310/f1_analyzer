@@ -1,5 +1,5 @@
 import { getCurrentStandings } from "@/services/standings";
-import { getRaceProgressInfo, getRecentRaceResults, getUpcomingRaces } from "@/services/sessionsData";
+import { getRaceProgressInfo, getRecentRaceResults, getUpcomingRaces } from "@/services/sessions-data";
 import { StandingsCard } from "@/components/standings-card";
 import { SeasonOverviewCard } from "@/components/season-overview-card";
 

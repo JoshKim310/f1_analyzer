@@ -1,6 +1,8 @@
-import { db } from "@/db";
-import { constructor_standings_latest, driver_standings_latest, drivers_latest, session_results, sessions } from "@/db/schema";
-import { asc, sql } from "drizzle-orm";
+import { getConstructorStandingsLatest } from "@/db/repositories/constructor-standings-latest.repository";
+import { getDriversLatest } from "@/db/repositories/driver-latest.repository";
+import { getDriverStandingsLatest } from "@/db/repositories/drivers-standings-latest.repository";
+import { getRaceWinnerBySessionKey } from "@/db/repositories/session-results.repository";
+import { getCompletedRacesCurrentYear } from "@/db/repositories/sessions.repository";
 
 export type DriverStanding = {
   driverNumber: number;
@@ -26,63 +28,19 @@ export type CurrentStandings = {
 };
 
 export async function getCurrentStandings(): Promise<CurrentStandings> {
-  const driverChampionshipData = await db
-    .select({
-      driver_number: driver_standings_latest.driver_number,
-      position_current: driver_standings_latest.position_current,
-      points_current: driver_standings_latest.points_current,
-    })
-    .from(driver_standings_latest)
-    .orderBy(asc(driver_standings_latest.position_current));
-
-  const constructorChampionshipData = await db
-    .select({
-      team_name: constructor_standings_latest.team_name,
-      position_current: constructor_standings_latest.position_current,
-      points_current: constructor_standings_latest.points_current,
-    })
-    .from(constructor_standings_latest)
-    .orderBy(asc(constructor_standings_latest.position_current));
-
-  const driverData = await db
-    .select({
-      driver_number: drivers_latest.driver_number,
-      first_name: drivers_latest.first_name,
-      last_name: drivers_latest.last_name,
-      team_name: drivers_latest.team_name,
-      team_colour: drivers_latest.team_colour,
-      name_acronym: drivers_latest.name_acronym,
-    })
-    .from(drivers_latest);
-
-  const completedRaces = await db
-    .select({
-      session_key: sessions.session_key,
-    })
-    .from(sessions)
-    .where(
-      sql`
-        ${sessions.year} = extract(year from now())::int
-        and ${sessions.session_name} = 'Race'
-        and ${sessions.date_end}:: timestamptz < now()
-      `
-    );
+  const driverChampionshipData = await getDriverStandingsLatest();
+  const constructorChampionshipData = await getConstructorStandingsLatest();
+  const driverData = await getDriversLatest();
+  const completedRaces = await getCompletedRacesCurrentYear();
 
   // Gets the session winner for each completed race
   const sessionResults = await Promise.all(
     completedRaces.map(async (race) => {
-      const result = await db
-        .select({
-          driverNumber: session_results.driver_number,
-        })
-        .from(session_results)
-        .where(
-          sql` ${session_results.session_key} = ${race.session_key} and ${session_results.position} = 1`
-        );
+      const result = await getRaceWinnerBySessionKey(race.session_key);
       return result[0]?.driverNumber;
     })
   );
-  console.log(completedRaces);
+
   // Count wins for each driver
   const winsByDriver = new Map<number, number>();
 
@@ -91,8 +49,8 @@ export async function getCurrentStandings(): Promise<CurrentStandings> {
       continue;
     }
     winsByDriver.set(
-        r,
-        (winsByDriver.get(r) ?? 0) + 1
+      r,
+      (winsByDriver.get(r) ?? 0) + 1
     )
   }
 

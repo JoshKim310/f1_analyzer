@@ -1,38 +1,8 @@
-import { db } from "@/db";
-import { meetings, session_results, sessions, drivers } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
-import { cache } from "react";
 import { getChampionshipRaces } from "./currentSeasonExceptions";
-
-type Meeting = {
-  meeting_key: number;
-  meeting_name: string;
-  country_name: string;
-  country_flag: string;
-  date_start: string;
-  date_end: string;
-  meeting_official_name: string;
-  gmt_offset: string;
-  circuit_image: string;
-};
-
-type Session = {
-  session_key: number;
-  session_name: string;
-};
-
-type SessionResult = {
-  position: number;
-  driver_number: number;
-  duration?: number;
-  gap_to_leader?: number;
-};
-
-type Driver = {
-  driver_number: number;
-  name_acronym: string;
-  team_colour?: string;
-};
+import { getMeetingsByYear } from "@/db/repositories/meetings.repository";
+import { getRaceByMeetingKey } from "@/db/repositories/sessions.repository";
+import { getSessionResults } from "@/db/repositories/session-results.repository";
+import { getDriversBySessionKey } from "@/db/repositories/drivers.repository";
 
 export type NextRaceInfo = {
   meeting_name: string;
@@ -91,31 +61,6 @@ function toNumber(value: string | number | null | undefined): number | undefined
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
 }
-
-const getMeetingsByYear = cache(async (year: number): Promise<Meeting[]> => {
-  const meetingsByYear = await db
-    .select()
-    .from(meetings)
-    .where(eq(meetings.year, year))
-
-  return meetingsByYear.map((meeting) => 
-    meeting.country_name === "United States"
-      ? { ...meeting, country_name: meeting.meeting_name.replace(" Grand Prix", "") }
-      : meeting
-  );
-});
-
-const getRaceByMeetingKey = cache(async (meetingKey: number) => {
-  return db
-    .select()
-    .from(sessions)
-    .where(
-      sql`
-        ${sessions.meeting_key} = ${meetingKey}
-        and ${sessions.session_name} = 'Race'
-      `
-    )
-});
 
 export async function getNextRaceInfo(): Promise<NextRaceInfo | null> {
   const year = new Date().getFullYear();
@@ -187,14 +132,8 @@ export async function getRecentRaceResults(
 
       if (raceSession?.session_key) {
         const [results, driver] = await Promise.all([
-          db 
-            .select()
-            .from(session_results)
-            .where(eq(session_results.session_key, raceSession.session_key)),
-          db
-            .select()
-            .from(drivers)
-            .where(eq(drivers.session_key, raceSession.session_key)),
+          getSessionResults(raceSession.session_key),
+          getDriversBySessionKey(raceSession.session_key),
         ]);
 
         const acronymByDriver = new Map(

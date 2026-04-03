@@ -1,5 +1,5 @@
 "use client"
-import { NextRaceInfo } from "@/services/sessionsData"
+import { NextRaceInfo } from "@/services/sessions-data"
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { Calendar } from "lucide-react"

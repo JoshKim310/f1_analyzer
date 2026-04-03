@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/shad
 import { AppSidebar } from "@/components/app-sidebar";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { getNextRaceInfo } from "@/services/sessionsData";
+import { getNextRaceInfo } from "@/services/sessions-data";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
