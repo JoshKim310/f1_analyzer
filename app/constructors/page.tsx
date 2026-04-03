@@ -1,13 +1,13 @@
-export default async function RaceCalendarPage() {
+export default async function ConstructorsPage() {
   return (
     <div className="flex min-h-[60vh] items-center justify-center p-8">
       <div className="w-full max-w-xl rounded-xl border border-border bg-card p-8 text-center shadow-sm">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-f1-red">
-          Race Calendar
+          Constructors
         </p>
         <h1 className="mt-3 font-heading text-3xl">Page Under Progress</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          This section is currently in development. Check back soon for the full race calendar experience.
+          This section is currently in development. Check back soon for the full constructors experience.
         </p>
         <img 
           src="/soft-tire.png"

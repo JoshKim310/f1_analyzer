@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 p-8">
         <StandingsCard driverStandings={drivers} constructorStandings={constructors} className="md:col-span-2 lg:col-span-2" />
-        {<SeasonOverviewCard raceProgress={raceProgress} recentResults={recentResults} upcomingRaces={upcomingRaces} />}
+        {<SeasonOverviewCard raceProgress={raceProgress} recentResults={recentResults} upcomingRaces={upcomingRaces} className="self-start h-fit" />}
     </div>
   );
 }

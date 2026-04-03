@@ -6,7 +6,8 @@ import { getCompletedRacesCurrentYear } from "@/db/repositories/sessions.reposit
 
 export type DriverStanding = {
   driverNumber: number;
-  position: number;
+  positionCurrent: number;
+  positionStart: number;
   points: number;
   wins: number;
   fullName: string;
@@ -17,7 +18,8 @@ export type DriverStanding = {
 
 export type ConstructorStanding = {
   teamName: string;
-  position: number;
+  positionCurrent: number;
+  positionStart: number;
   points: number;
   teamColor: string;
 };
@@ -68,7 +70,8 @@ export async function getCurrentStandings(): Promise<CurrentStandings> {
 
       return {
         driverNumber: d.driver_number,
-        position: d.position_current ?? 0,
+        positionCurrent: d.position_current ?? 0,
+        positionStart: d.position_start ?? 0,
         points: d.points_current ?? 0,
         wins: winsByDriver.get(d.driver_number) ?? 0,
         fullName: driver ? `${driver.first_name} ${driver.last_name}` : "Unknown",
@@ -82,7 +85,8 @@ export async function getCurrentStandings(): Promise<CurrentStandings> {
     .map((d) => {
       return {
       teamName: d.team_name ?? "",
-      position: d.position_current ?? 0,
+      positionCurrent: d.position_current ?? 0,
+      positionStart: d.position_start ?? 0,
       points: d.points_current ?? 0,
       teamColor: teamColorMap.get(d.team_name) ?? "",
       };      

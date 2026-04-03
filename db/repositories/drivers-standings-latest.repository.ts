@@ -5,11 +5,7 @@ import { asc } from "drizzle-orm";
 
 export const getDriverStandingsLatest = cache(async () => {
   return db
-    .select({
-      driver_number: driver_standings_latest.driver_number,
-      position_current: driver_standings_latest.position_current,
-      points_current: driver_standings_latest.points_current,
-    })
+    .select()
     .from(driver_standings_latest)
     .orderBy(asc(driver_standings_latest.position_current))
 });

@@ -8,7 +8,8 @@ import { Trophy, Warehouse } from "lucide-react";
 
 type DriverStandingRow = {
   driverNumber: number;
-  position: number;
+  positionCurrent: number;
+  positionStart: number;
   fullName: string;
   teamName: string;
   teamColor: string;
@@ -18,7 +19,8 @@ type DriverStandingRow = {
 }
 
 type ConstructorStandingRow = {
-  position: number;
+  positionCurrent: number;
+  positionStart: number;
   teamName: string;
   points: number;
   teamColor: string;
@@ -49,6 +51,30 @@ const hexToRgba = (hex: string, alpha: number) => {
   const b = num & 255;
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
+
+function renderPositionDiff(positionStart: number, positionCurrent: number) {
+  const delta = positionStart - positionCurrent;
+
+  if (delta > 0) {
+    return (
+      <span className="inline-flex items-center justify-center gap-1 text-muted-foreground">
+        <span className="text-[12px] leading-none text-green-500">▲</span>
+        <span>{delta}</span>
+      </span>
+    );
+  }
+
+  if (delta < 0) {
+    return (
+      <span className="inline-flex items-center justify-center gap-1 text-muted-foreground">
+        <span className="text-[12px] leading-none text-red-500">▼</span>
+        <span>{Math.abs(delta)}</span>
+      </span>
+    );
+  }
+
+  return <span className="text-muted-foreground">-</span>;
+}
 
 export function StandingsCard({
   driverStandings,
@@ -94,7 +120,8 @@ export function StandingsCard({
                     <th className="text-left py-2 pr-4">Driver</th>
                     <th className="text-left py-2 pr-4">Team</th>
                     <th className="text-center py-2 pr-4">Wins</th>
-                    <th className="text-center py-2">Pts</th>
+                    <th className="text-center py-2 pr-8">Pts</th>
+                    <th className="text-center py-2 pl-2"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -103,8 +130,7 @@ export function StandingsCard({
 
                     return (
                       <tr key={idx} className="border-b border-border/50">
-                        <td className="py-6 pr-4 text-center">{row.position}</td>
-
+                        <td className="py-6 pr-4 text-center">{row.positionCurrent}</td>
                         <td className="py-6 pr-4">
                           <div className="flex items-center gap-3">
                             <span
@@ -120,10 +146,10 @@ export function StandingsCard({
                             <span className="text-left">{row.fullName}</span>
                           </div>
                         </td>
-
                         <td className="py-6 pr-4">{row.teamName}</td>
                         <td className="py-6 pr-4 text-center">{row.wins ?? "-"}</td>
-                        <td className="py-6 text-center">{row.points}</td>
+                        <td className="py-6 pr-8 text-center">{row.points}</td>
+                        <td className="py-6 pl-2 pr-4 text-center">{renderPositionDiff(row.positionStart, row.positionCurrent)}</td>
                       </tr>
                     );
                   })}
@@ -137,7 +163,8 @@ export function StandingsCard({
                   <tr className="p-2">
                     <th className="w-12 text-center py-2 pl-0 pr-2">Pos</th>
                     <th className="text-left py-2 pl-10">Team</th>
-                    <th className="w-16 text-center py-2">Pts</th>
+                    <th className="w-16 text-center py-2 pr-20">Pts</th>
+                    <th className="w-12 text-center py-2 pl-2"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -146,7 +173,7 @@ export function StandingsCard({
                     const logoUrl = TEAM_LOGO_ICONS[row.teamName];
                     return (
                       <tr key={idx} className="border-b border-border/50">
-                        <td className="w-12 py-6 pl-0 pr-2 text-center font-semibold">{row.position}</td>
+                        <td className="w-12 py-6 pl-0 pr-2 text-center font-semibold">{row.positionCurrent}</td>
                         <td className="py-6 pl-10 text-left font-semibold">
                           <div className="flex items-center gap-2">
                             <span
@@ -166,7 +193,8 @@ export function StandingsCard({
                             <span>{row.teamName}</span>
                           </div>
                         </td>
-                        <td className="w-16 py-6 text-center font-semibold">{row.points}</td>
+                        <td className="w-16 py-6 pr-20 text-center font-semibold">{row.points}</td>
+                        <td className="w-12 py-6 text-center font-semibold">{renderPositionDiff(row.positionStart, row.positionCurrent)}</td>
                       </tr>
                     );
                   })}
