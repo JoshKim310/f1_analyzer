@@ -5,7 +5,8 @@ import Image from "next/image"
 import { Calendar } from "lucide-react"
 
 type HeaderProps = {
-    nextRace: NextRaceInfo | null
+  nextRace: NextRaceInfo | null
+  initialNow: number
 }
 
 function format24HourTime(date: Date) {
@@ -40,8 +41,8 @@ function getTrackNowFromOffset(now: Date, trackOffsetMinutes: number) {
   return new Date(trackNowMs);
 }
 
-function getTimeLeft(target: string) {
-  const diff = new Date(target).getTime() - Date.now();
+function getTimeLeft(target: string, nowMs: number) {
+  const diff = new Date(target).getTime() - nowMs;
   if (diff <= 0) return null;
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -65,17 +66,20 @@ function formatMeetingDate(dateIso: string) {
   return `${weekday}, ${datePart} ${timePart}`;
 }
 
-export function Header({ nextRace }: HeaderProps) {
-    const [currentTime, setCurrentTime] = useState(Date.now());
+export function Header({ nextRace, initialNow }: HeaderProps) {
+  const [currentTime, setCurrentTime] = useState(initialNow);
+  const [isMounted, setIsMounted] = useState(false);
 
-    useEffect(() => {
-      const id = setInterval(() => setCurrentTime(Date.now()), 1000);
-      return () => clearInterval(id);
-    }, []);
+  useEffect(() => {
+    setIsMounted(true);
+
+    const id = setInterval(() => setCurrentTime(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
     const timeLeft = useMemo(() => {
       if (!nextRace?.dateStart) return null;
-        return getTimeLeft(nextRace.dateStart);
+      return getTimeLeft(nextRace.dateStart, currentTime);
     }, [nextRace?.dateStart, currentTime]);
 
     const meetingDate = useMemo(() => {
@@ -87,19 +91,18 @@ export function Header({ nextRace }: HeaderProps) {
       if (!nextRace?.gmtOffset) return null;
 
       const now = new Date(currentTime);
-      const localTime = format24HourTime(now);
       const trackOffsetMinutes = parseGmtOffsetMinutes(nextRace.gmtOffset);
       const trackNow = getTrackNowFromOffset(now, trackOffsetMinutes);
-
       const localOffsetMinutes = -now.getTimezoneOffset();
       const deltaMinutes = trackOffsetMinutes - localOffsetMinutes;
 
       return {
-        localTime,
+        localTime: isMounted ? format24HourTime(now) : null,
         trackTime: format24HourTime(trackNow),
+        offsetLabel: formatSignedOffset(trackOffsetMinutes),
         deltaLabel: formatSignedOffset(deltaMinutes),
       };
-    }, [nextRace?.gmtOffset, currentTime]);
+    }, [nextRace?.gmtOffset, currentTime, isMounted]);
 
     return (
         <header className="sticky top-0 z-50 h-[var(--header-height)] shrink-0 border-b border-border bg-background px-6 py-4">

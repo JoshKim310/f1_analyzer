@@ -27,6 +27,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const nextRace = await getNextRaceInfo();
+  const initialNow = Date.now();
   return (
     <html lang="en">
       <body 
@@ -34,7 +35,7 @@ export default async function RootLayout({
       style={{
         ["--header-height" as string]: "72px",
       }} >
-        <Header nextRace={nextRace} />
+        <Header nextRace={nextRace} initialNow={initialNow} />
         <SidebarProvider className="flex-1 min-h-0">
           <AppSidebar/>
           <SidebarInset>
