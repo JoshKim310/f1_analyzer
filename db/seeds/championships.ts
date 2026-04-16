@@ -33,6 +33,26 @@ type ConstructorChampionshipInsert = {
 
 const INSERT_CHUNK_SIZE = 500;
 
+async function fetchOpenF1RowsOrEmpty<T>(
+  endpoint: string,
+  log: (message: string) => void,
+  label: string,
+) {
+  try {
+    return await openF1Fetch<T[]>(endpoint);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    // OpenF1 sometimes returns 404 with "No results found" while data is not published yet.
+    if (message.includes("(404)") && message.includes("No results found")) {
+      log(`${label}: no rows from ${endpoint}, skipping`);
+      return [] as T[];
+    }
+
+    throw error;
+  }
+}
+
 function chunkArray<T>(rows: T[], chunkSize: number) {
   const chunks: T[][] = [];
   for (let i = 0; i < rows.length; i += chunkSize) {
@@ -74,8 +94,16 @@ async function insertConstructorChampionshipRows(db: DbClient, rows: Constructor
 
 export async function seedChampionships(db: DbClient, log: (message: string) => void) {
   const [driverRows, constructorRows] = await Promise.all([
-    openF1Fetch<OpenF1DriverChampionship[]>("/championship_drivers?session_key=latest"),
-    openF1Fetch<OpenF1ConstructorChampionship[]>("/championship_teams?session_key=latest"),
+    fetchOpenF1RowsOrEmpty<OpenF1DriverChampionship>(
+      "/championship_drivers?session_key=latest",
+      log,
+      "championships"
+    ),
+    fetchOpenF1RowsOrEmpty<OpenF1ConstructorChampionship>(
+      "/championship_teams?session_key=latest",
+      log,
+      "championships"
+    ),
   ]);
 
   if (driverRows.length > 0) {
@@ -102,8 +130,16 @@ export async function seedChampionships(db: DbClient, log: (message: string) => 
 
 export async function seedChampionshipsFullHistory(db: DbClient, log: (message: string) => void) {
   const [driverRows, constructorRows] = await Promise.all([
-    openF1Fetch<OpenF1DriverChampionship[]>("/championship_drivers"),
-    openF1Fetch<OpenF1ConstructorChampionship[]>("/championship_teams"),
+    fetchOpenF1RowsOrEmpty<OpenF1DriverChampionship>(
+      "/championship_drivers",
+      log,
+      "championships(full)"
+    ),
+    fetchOpenF1RowsOrEmpty<OpenF1ConstructorChampionship>(
+      "/championship_teams",
+      log,
+      "championships(full)"
+    ),
   ]);
 
   if (driverRows.length > 0) {

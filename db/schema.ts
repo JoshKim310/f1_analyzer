@@ -123,9 +123,13 @@ export const driver_standings_latest = pgView(
 ).as((qb) => {
   const latestSession = qb
     .select({
-      session_key: sessions.session_key,
+      session_key: driver_championships.session_key,
     })
-    .from(sessions)
+    .from(driver_championships)
+    .innerJoin(
+      sessions,
+      eq(driver_championships.session_key, sessions.session_key)
+    )
     .where(
         sql`
           ${sessions.year} = extract(year from now())::int
@@ -157,9 +161,13 @@ export const constructor_standings_latest = pgView(
 ).as((qb) => {
   const latestSession = qb
     .select({
-      session_key: sessions.session_key,
+      session_key: constructor_championships.session_key,
     })
-    .from(sessions)
+    .from(constructor_championships)
+    .innerJoin(
+      sessions,
+      eq(constructor_championships.session_key, sessions.session_key)
+    )
     .where(
         sql`
           ${sessions.year} = extract(year from now())::int

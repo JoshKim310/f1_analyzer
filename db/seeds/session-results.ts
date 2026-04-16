@@ -104,7 +104,7 @@ export async function seedSessionResults({ db, year, log }: SeedContext) {
     .where(
       and(
         eq(sessions.year, year),
-        lt(sessions.date_start, new Date().toISOString())
+        lt(sessions.date_end, new Date().toISOString())
       )
     );
 
@@ -142,7 +142,21 @@ export async function seedSessionResults({ db, year, log }: SeedContext) {
 
   for (const session of pendingSessions as SessionRef[]) {
     const endpoint = `/session_result?session_key=${session.session_key}`;
-    const rows = await openF1Fetch<OpenF1SessionResult[]>(endpoint);
+
+    let rows: OpenF1SessionResult[];
+    try {
+      rows = await openF1Fetch<OpenF1SessionResult[]>(endpoint);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+
+      // OpenF1 returns 404 for sessions that have no published results yet.
+      if (message.includes("(404)") && message.includes("No results found")) {
+        log(`session_results: no published results for session ${session.session_key}, skipping`);
+        continue;
+      }
+
+      throw error;
+    }
 
     if (rows.length === 0) {
       continue;

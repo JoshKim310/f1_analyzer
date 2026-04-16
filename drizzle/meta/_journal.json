@@ -78,6 +78,13 @@
       "when": 1775122647335,
       "tag": "0010_rare_daimon_hellstrom",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1776324517849,
+      "tag": "0011_wandering_pixie",
+      "breakpoints": true
     }
   ]
 }
