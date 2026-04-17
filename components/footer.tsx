@@ -17,14 +17,14 @@ export function Footer() {
           <nav className="flex flex-col gap-2 text-sm ml-30">
             <span className="font-semibold">Quick Links</span>
             <Link href="/" className="text-muted-foreground hover:text-foreground">Dashboard</Link>
-            <Link href="/calendar" className="text-muted-foreground hover:text-foreground">Race Calendar</Link>
+            <Link href="/race-calendar" className="text-muted-foreground hover:text-foreground">Race Calendar</Link>
             <Link href="/drivers" className="text-muted-foreground hover:text-foreground">Drivers</Link>
           </nav>
 
           <nav className="flex flex-col gap-2 text-sm ml-10">
             <span className="font-semibold invisible select-none">Quick Links</span>
             <Link href="/constructors" className="text-muted-foreground hover:text-foreground">Constructors</Link>
-            <Link href="/analysis" className="text-muted-foreground hover:text-foreground">Race Analysis</Link>
+            <Link href="/race-analysis" className="text-muted-foreground hover:text-foreground">Race Analysis</Link>
             <Link href="/ai-analytics" className="text-muted-foreground hover:text-foreground">AI Analytics</Link>
           </nav>
 
