@@ -20,6 +20,7 @@ export type RaceProgressInfo = {
 };
 
 export type RecentRaceResult = {
+  year: number;
   countryName: string;
   countryFlag: string;
   round: number;
@@ -35,6 +36,7 @@ export type RecentRaceResult = {
 };
 
 export type UpcomingRaceInfo = {
+  year: number;
   countryName: string;
   countryFlag: string;
   round: number;
@@ -102,8 +104,8 @@ export async function getRaceProgressInfo(year = new Date().getFullYear()): Prom
 }
 
 export async function getRecentRaceResults(
-  year = new Date().getFullYear(),
-  limit = 3
+  year: number,
+  limit?: number
 ): Promise<RecentRaceResult[]> {
   const meetings = await getMeetingsByYear(year);
   const now = new Date();
@@ -121,7 +123,7 @@ export async function getRecentRaceResults(
       (a, b) =>
         new Date(b.race.date_start).getTime() - new Date(a.race.date_start).getTime()
     )
-    .slice(0, limit);
+    .slice(0, limit ?? undefined);
 
   return Promise.all(
     recent.map(async ({ race, round }) => {
@@ -170,6 +172,7 @@ export async function getRecentRaceResults(
       }
 
       return {
+      year,
       countryName: race.country_name,
       countryFlag: race.country_flag,
       round,
@@ -183,8 +186,8 @@ export async function getRecentRaceResults(
 }
 
 export async function getUpcomingRaces(
-  year = new Date().getFullYear(),
-  limit = 3
+  year: number,
+  limit?: number
 ): Promise<UpcomingRaceInfo[]> {
   const meetings = await getMeetingsByYear(year);
   const now = new Date();
@@ -195,11 +198,12 @@ export async function getUpcomingRaces(
   const upcoming = racesAscending
     .map((race, index) => ({ race, round: index + 1 }))
     .filter(({ race }) => new Date(race.date_start) > now)
-    .slice(0, limit);
+    .slice(0, limit ?? undefined);
   
   return (
     upcoming.map( ({ race, round }) => {
       return {
+        year,
         countryName: race.country_name,
         countryFlag: race.country_flag,
         round,

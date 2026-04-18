@@ -1,3 +1,4 @@
+"use client"
 import { Card, CardContent, CardHeader, CardTitle } from "./shadcn/card";
 import { Calendar } from "lucide-react";
 import type { RaceProgressInfo, RecentRaceResult, UpcomingRaceInfo } from "@/services/sessions-data";

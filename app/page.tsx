@@ -7,8 +7,8 @@ export default async function Home() {
   const [{ drivers, constructors }, raceProgress, recentResults, upcomingRaces] = await Promise.all([
     getCurrentStandings(),
     getRaceProgressInfo(),
-    getRecentRaceResults(),
-    getUpcomingRaces(),
+    getRecentRaceResults(new Date().getFullYear(), 3),
+    getUpcomingRaces(new Date().getFullYear(), 3),
   ]);
   
   return (
