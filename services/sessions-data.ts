@@ -33,6 +33,7 @@ export type RecentRaceResult = {
     time: string;
     teamColor: string;
   }[];
+  circuitShortName: string;
 };
 
 export type UpcomingRaceInfo = {
@@ -44,6 +45,7 @@ export type UpcomingRaceInfo = {
   dateEnd: string;
   grandPrixName: string;
   circuitImage: string;
+  circuitShortName: string;
 };
 
 function formatDuration(seconds: number) {
@@ -180,6 +182,7 @@ export async function getRecentRaceResults(
       dateEnd: race.date_end ?? race.date_start,
       grandPrixName: race.meeting_official_name,
       podium,
+      circuitShortName: race.circuit_short_name,
       };
     })
   );
@@ -211,6 +214,7 @@ export async function getUpcomingRaces(
         dateEnd: race.date_end,
         grandPrixName: race.meeting_official_name,
         circuitImage: race.circuit_image,
+        circuitShortName: race.circuit_short_name,
       }
     })
   );

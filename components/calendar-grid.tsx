@@ -25,7 +25,33 @@ type CalendarCard = {
     teamColor: string;
   }>;
   circuitImage?: string;
+  circuitShortName: string;
 };
+
+const banners: Record<string, string> = {
+  "Melbourne": "australia.png",
+  "Shanghai": "china.png",
+  "Suzuka": "japan.png",
+  "Miami": "miami.png",
+  "Montreal": "canada.png",
+  "Monte Carlo": "monaco.png",
+  "Barcelona": "barcelona.png",
+  "Spielberg": "austria.png",
+  "Silverstone": "british.png",
+  "Spa-Francorchamps": "belgium.png",
+  "Hungaroring": "hungary.png",
+  "Zandvoort": "netherlands.png",
+  "Monza": "monza.png",
+  "Madring" : "madring.png",
+  "Baku": "azerbaijan.png",
+  "Singapore": "singapore.png",
+  "Austin": "austin.png",
+  "Mexico City": "mexico.png",
+  "Interlagos": "brazil.png",
+  "Las Vegas": "vegas.png",
+  "Lusail": "qatar.png",
+  "Yas Marina": "abudhabi.png",
+}
 
 function getOrdinal(position: number) {
   if (position === 1) return "1ST";
@@ -77,6 +103,7 @@ function buildCalendarCards(
         dateRange: formatRaceDateRange(recent.dateStart, recent.dateEnd),
         status: "Completed" as const,
         podium: recent.podium,
+        circuitShortName: recent.circuitShortName,
       };
     }
 
@@ -90,6 +117,7 @@ function buildCalendarCards(
         dateRange: formatRaceDateRange(upcoming.dateStart, upcoming.dateEnd),
         status: "Upcoming" as const,
         circuitImage: upcoming.circuitImage,
+        circuitShortName: upcoming.circuitShortName,
       };
     }
 
@@ -110,12 +138,14 @@ export function CalendarGrid({
   const filteredUpcomingRaces = upcomingRaces.filter((race) => race.year === selectedYear);
   const grandPrixCards = buildCalendarCards(filteredRecentResults, filteredUpcomingRaces);
   const nextRace = filteredUpcomingRaces.filter((race) => race.dateStart > new Date().toISOString())[0];
-  console.log(nextRace);
 
   return (
     <div className="flex flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:px-20">
       <section className="space-y-2">
-        <h1 className="font-heading text-3xl tracking-wide pb-6">{selectedYear} Race Calendar</h1>
+        <h1 className="font-heading text-3xl tracking-wide">{selectedYear} Race Calendar</h1>
+        <p className="font-pixel text-xs uppercase tracking-wide text-white/60 py-4">
+          {filteredRecentResults.length + "/" +grandPrixCards.length} races
+        </p>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="lg" className="h-8 gap-1.5 px-2.5 text-sm">
@@ -132,7 +162,28 @@ export function CalendarGrid({
           </DropdownMenuContent>
         </DropdownMenu>
       </section>
+      {nextRace &&
+        <Card
+          className="relative min-h-[300px] overflow-hidden rounded-3xl border-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('/next-race-banners/${banners[nextRace.circuitShortName]}')` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-black/5" />
 
+          <CardContent className="relative flex h-full min-h-[220px] flex-col justify-between px-6 py-6 sm:px-8 sm:py-8">
+            <div className="max-w-md space-y-2 text-white">
+              <p className="text-xs uppercase tracking-[0.3em] text-white/70">{"Round " + nextRace.round}</p>
+              <p className="font-heading text-4xl leading-none sm:text-5xl">{nextRace.countryName}</p>
+              <p className="max-w-sm text-sm text-white/75">
+                {nextRace.grandPrixName}
+              </p>
+            </div>
+
+            <div className="flex items-end justify-between gap-4 text-white/85">
+              <p className="font-pixel text-sm uppercase tracking-[0.2em] text-white/60">{formatRaceDateRange(nextRace.dateStart, nextRace.dateEnd)}</p>
+            </div>
+          </CardContent>
+        </Card>
+      }
       <section className="grid gap-6 min-[700px]:grid-cols-2 min-[1293px]:grid-cols-3">
         {grandPrixCards.map((race) => {
           return (
