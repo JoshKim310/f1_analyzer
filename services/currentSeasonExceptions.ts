@@ -8,6 +8,7 @@ type Meeting = {
   meeting_official_name: string;
   gmt_offset: string;
   circuit_image: string;
+  circuit_short_name: string;
 };
 
 // EXCEPTION: Cancelled meetings for 2026 season
