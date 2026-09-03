@@ -4,10 +4,10 @@ import type { DbClient } from "./types";
 
 type OpenF1DriverChampionship = {
   driver_number: number;
-  meeting_key: number | null;
+  meeting_key: number;
   points_current: number | null;
   points_start: number | null;
-  position_current: number | null;
+  position_current: number;
   position_start: number | null;
   session_key: number;
 };
@@ -22,7 +22,7 @@ type OpenF1ConstructorChampionship = {
   team_name: string;
 };
 type ConstructorChampionshipInsert = {
-  meeting_key: number | null;
+  meeting_key: number;
   points_current: number | null;
   points_start: number | null;
   position_current: number | null;
@@ -59,6 +59,18 @@ function chunkArray<T>(rows: T[], chunkSize: number) {
     chunks.push(rows.slice(i, i + chunkSize));
   }
   return chunks;
+}
+
+function normalizeDriverRows(rows: OpenF1DriverChampionship[]) {
+  return rows
+    .filter(
+      (row): row is OpenF1DriverChampionship & {
+        meeting_key: number;
+        position_current: number;
+      } =>
+        row.meeting_key != null &&
+        row.position_current != null,
+    );
 }
 
 async function insertDriverChampionshipRows(db: DbClient, rows: OpenF1DriverChampionship[]) {
@@ -106,8 +118,10 @@ export async function seedChampionships(db: DbClient, log: (message: string) => 
     ),
   ]);
 
-  if (driverRows.length > 0) {
-    await insertDriverChampionshipRows(db, driverRows);
+  const validDriverRows = normalizeDriverRows(driverRows);
+
+  if (validDriverRows.length > 0) {
+    await insertDriverChampionshipRows(db, validDriverRows);
   }
 
   const validConstructorRows = normalizeConstructorRows(constructorRows);
