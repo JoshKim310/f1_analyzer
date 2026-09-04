@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { seedChampionships } from "@/db/seeds/championships";
+import { runMaintenanceSeed } from "@/db/seeds";
 
 export async function GET(request: Request) {
   try {
@@ -10,10 +10,11 @@ export async function GET(request: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const result = await seedChampionships(
-      db,
-      (message) => console.log(message),
-    );
+    const year = new Date().getFullYear();
+
+    const result = await runMaintenanceSeed(db, year, (message) => {
+      console.log(`[cron-seed] ${message}`);
+    });
 
     return NextResponse.json({
       success: true,
@@ -23,7 +24,8 @@ export async function GET(request: Request) {
     console.error("Cron seed failed:", error);
 
     return NextResponse.json(
-      { success: false, error: "Seed failed" },
+      { success: false,
+        error: error instanceof Error ? error.message : "Seed failed" },
       { status: 500 },
     );
   }

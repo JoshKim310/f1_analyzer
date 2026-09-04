@@ -8,6 +8,7 @@ import { seedDrivers, seedDriversFullHistory } from "./seeds/drivers";
 import { seedSessionResults, seedSessionResultsFullHistory } from "./seeds/session-results";
 import { seedSessions, seedSessionsFullHistory } from "./seeds/sessions";
 import { seedMeetings, seedMeetingsFullHistory } from "./seeds/meetings";
+import { runMaintenanceSeed } from "./seeds";
 
 function parseArgs() {
 	const arg = process.argv[2];
@@ -53,11 +54,7 @@ async function runSeed() {
 		}
 
 		log("starting maintenance seed");
-		await seedMeetings({ db, log });
-		await seedSessions({ db, log });
-		await seedSessionResults({ db, year, log });
-		await seedDrivers({ db, log });
-		await seedChampionships(db, log);
+		await runMaintenanceSeed(db, year, log);
 		log("finished maintenance seed");
 	} finally {
 		await pool.end();
