@@ -1,7 +1,7 @@
 import { session_results, sessions } from "../schema";
 import { and, eq, inArray, lt } from "drizzle-orm";
 import { openF1Fetch } from "./openf1";
-import type { SeedContext } from "./types";
+import type { SeedContext, YearSeedContext } from "./types";
 
 type SessionRef = {
   session_key: number;
@@ -94,7 +94,7 @@ export async function seedSessionResultsFullHistory({ db, log }: Omit<SeedContex
   return { inserted: mappedRows.length };
 }
 
-export async function seedSessionResults({ db, year, log }: SeedContext) {
+export async function seedSessionResults({ db, year, log }: YearSeedContext) {
   const sessionRows = await db
     .select({
       session_key: sessions.session_key,

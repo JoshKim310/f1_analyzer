@@ -13,17 +13,15 @@ function parseArgs() {
 	const arg = process.argv[2];
 	const current = new Date().getFullYear();
 
-	if (!arg) return { years: [current], mode: "maintenance" as const };
-	if (arg === "recent") return { years: [current - 1, current], mode: "maintenance" as const };
-	if (arg === "full") return { years: [current], mode: "full" as const };
-	if (arg === "results:full") return { years: [current], mode: "resultsFull" as const };
+	if (!arg) return { year: current, mode: "maintenance" as const };
+	if (arg === "full") return { mode: "full" as const };
 
 	const parsed = Number(arg);
 	if (!Number.isInteger(parsed)) {
 		throw new Error(`Invalid year argument: ${arg}`);
 	}
 
-	return { years: [parsed], mode: "maintenance" as const };
+	return { year: parsed, mode: "maintenance" as const };
 }
 
 async function runSeed() {
@@ -31,7 +29,7 @@ async function runSeed() {
 		throw new Error("DATABASE_URL is not set");
 	}
 
-	const { years, mode } = parseArgs();
+	const { year, mode } = parseArgs();
 
 	const pool = new Pool({
 		connectionString: process.env.DATABASE_URL,
@@ -45,25 +43,22 @@ async function runSeed() {
 	try {
 		if (mode === "full") {
 			log("starting full-history seed");
-			await seedSessionsFullHistory({ db, log });
-			await seedDriversFullHistory({ db, log });
-			await seedSessionResultsFullHistory({ db, log });
-			await seedChampionshipsFullHistory(db, log);
 			await seedMeetingsFullHistory({ db, log });
+			await seedSessionsFullHistory({ db, log });
+			await seedSessionResultsFullHistory({ db, log });
+			await seedDriversFullHistory({ db, log });
+			await seedChampionshipsFullHistory(db, log);
 			log("finished full-history seed");
 			return;
 		}
 
-		for (const year of years) {
-			log(`starting year ${year}`);
-			await seedSessions({ db, year, log });
-			await seedDrivers({ db, year, log });
-			await seedSessionResults({ db, year, log });
-			await seedMeetings({ db, year, log });
-			log(`finished year ${year}`);
-		}
-
+		log("starting maintenance seed");
+		await seedMeetings({ db, log });
+		await seedSessions({ db, log });
+		await seedSessionResults({ db, year, log });
+		await seedDrivers({ db, log });
 		await seedChampionships(db, log);
+		log("finished maintenance seed");
 	} finally {
 		await pool.end();
 	}

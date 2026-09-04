@@ -8,9 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx db/seed.ts",
-    "db:seed:full": "tsx db/seed.ts full",
-    "db:seed:recent": "tsx db/seed.ts recent",
-    "db:seed:results:full": "tsx db/seed.ts results:full"
+    "db:seed:full": "tsx db/seed.ts full"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

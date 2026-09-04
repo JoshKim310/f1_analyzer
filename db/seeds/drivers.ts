@@ -72,11 +72,11 @@ export async function seedDriversFullHistory({ db, log }: Omit<SeedContext, "yea
   return { inserted: mappedRows.length };
 }
 
-export async function seedDrivers({ db, year, log }: SeedContext) {
+export async function seedDrivers({ db, log }: SeedContext) {
   const rows = await openF1Fetch<OpenF1Driver[]>("/drivers?session_key=latest");
 
   if (rows.length === 0) {
-    log(`drivers: no rows returned for ${year}`);
+    log(`drivers: no rows returned from latest snapshot`);
     return { inserted: 0 };
   }
 

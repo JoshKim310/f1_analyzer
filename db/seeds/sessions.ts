@@ -30,7 +30,7 @@ function chunkArray<T>(rows: T[], chunkSize: number) {
   return chunks;
 }
 
-function mapSessionRow(row: OpenF1SessionWithMeetingKey, fallbackYear: number | null) {
+function mapSessionRow(row: OpenF1SessionWithMeetingKey) {
   return {
     session_key: row.session_key,
     circuit_key: row.circuit_key,
@@ -44,7 +44,7 @@ function mapSessionRow(row: OpenF1SessionWithMeetingKey, fallbackYear: number | 
     meeting_key: row.meeting_key,
     session_name: row.session_name,
     session_type: row.session_type,
-    year: row.year ?? fallbackYear,
+    year: row.year,
   };
 }
 
@@ -71,17 +71,17 @@ export async function seedSessionsFullHistory({ db, log }: Omit<SeedContext, "ye
     (row): row is OpenF1SessionWithMeetingKey => row.meeting_key != null
   );
 
-  await insertSessionRows(db, mappedRows.map((row) => mapSessionRow(row, null)));
+  await insertSessionRows(db, mappedRows.map((row) => mapSessionRow(row)));
 
   log(`sessions(full): inserted ${mappedRows.length} rows from base endpoint`);
   return { inserted: mappedRows.length };
 }
 
-export async function seedSessions({ db, year, log }: SeedContext) {
-  const rows = await openF1Fetch<OpenF1Session[]>(`/sessions?year=${year}`);
+export async function seedSessions({ db, log }: SeedContext) {
+  const rows = await openF1Fetch<OpenF1Session[]>(`/sessions?session_key=latest`);
 
   if (rows.length === 0) {
-    log(`sessions: no rows for ${year}`);
+    log(`sessions: no rows returned from latest snapshot`);
     return { inserted: 0 };
   }
 
@@ -89,8 +89,8 @@ export async function seedSessions({ db, year, log }: SeedContext) {
     (row): row is OpenF1SessionWithMeetingKey => row.meeting_key != null
   );
 
-  await insertSessionRows(db, mappedRows.map((row) => mapSessionRow(row, year)));
+  await insertSessionRows(db, mappedRows.map((row) => mapSessionRow(row)));
 
-  log(`sessions: upserted ${mappedRows.length} rows for ${year}`);
+  log(`sessions: upserted ${mappedRows.length} rows for latest snapshot`);
   return { inserted: mappedRows.length };
 }
