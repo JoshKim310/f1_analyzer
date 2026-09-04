@@ -45,13 +45,13 @@ export function SeasonOverviewCard({
 
     return (
       <Card className={className}>
-        <CardHeader className="px-6 pt-2">
-          <CardTitle className="flex gap-2">
+        <CardHeader className="px-4 pt-2 sm:px-6">
+          <CardTitle className="flex items-center gap-2">
             <Calendar />
-            <span className="font-heading text-xl">{new Date().getFullYear()} Season Overview</span>
+            <span className="font-heading text-base sm:text-xl">{new Date().getFullYear()} Season Overview</span>
           </CardTitle>           
         </CardHeader>
-        <CardContent className="space-y-6 px-8">
+        <CardContent className="space-y-6 px-4 sm:px-8">
           <div>
             <p className="text-lg">
             Round {currentRound}/{totalRaces}
@@ -84,7 +84,7 @@ export function SeasonOverviewCard({
                   <div key={`${race.round}-${race.dateStart}`} className="rounded-lg border border-border bg-muted/30 p-3">
                     <div className="flex items-center justify-between pb-2">
                       <p className="text-xs text-muted-foreground">ROUND {race.round}</p>
-                      <p className="text-xs text-muted-foreground font-pixel">
+                      <p className="text-right text-xs text-muted-foreground font-pixel">
                         {formatRaceDateRange(race.dateStart, race.dateEnd)}
                       </p>
                     </div>
