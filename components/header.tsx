@@ -105,18 +105,18 @@ export function Header({ nextRace, initialNow }: HeaderProps) {
     }, [nextRace?.gmtOffset, currentTime, isMounted]);
 
     return (
-        <header className="sticky top-0 z-50 h-[var(--header-height)] shrink-0 border-b border-border bg-background px-6 py-4">
-          <div className="flex h-full items-center gap-20">
+        <header className="sticky top-0 z-50 shrink-0 border-b border-border bg-background px-4 py-3 sm:px-6 sm:py-4 min-[821px]:h-[var(--header-height)]">
+          <div className="flex min-w-0 flex-col gap-3 min-[821px]:h-full min-[821px]:flex-row min-[821px]:items-center min-[821px]:gap-8 lg:gap-20">
             <div>
-              <h1 className="font-title text-2xl tracking-widest uppercase text-f1-red">F1 Analyzer</h1>
+              <h1 className="font-title text-xl tracking-widest uppercase text-f1-red sm:text-2xl">F1 Analyzer</h1>
               <p className="text-sm text-muted-foreground">Race analytics dashboard</p>
             </div>
             
-            <div className="rounded-lg border border-muted bg-card px-4 py-2 text-sm min-w-[350px]">
+            <div className="min-w-0 rounded-lg border border-muted bg-card px-3 py-2 text-sm sm:min-w-[350px] sm:px-4">
               {nextRace ? (
                 <>
-                  <div className="flex items-center">
-                    <div>
+                  <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
+                    <div className="min-w-0 shrink-0">
                       <p className="font-heading leading-tight flex items-center gap-2 pb-1">
                         <Image
                           src={nextRace.countryFlag}
@@ -136,7 +136,7 @@ export function Header({ nextRace, initialNow }: HeaderProps) {
                       </div>
                       
                     </div>
-                    <p className="text-xs text-muted-foreground pl-1 font-digital inline-flex items-center">
+                    <p className="inline-flex shrink-0 items-center pl-1 text-xs text-muted-foreground font-digital">
                       {timeLeft? (
                         <>
                         <span className="inline-block w-[3ch] text-right text-white tabular-nums">{timeLeft.days}</span>
@@ -155,7 +155,7 @@ export function Header({ nextRace, initialNow }: HeaderProps) {
                       <span className="text-muted-foreground pb-2 pl-5">In Progress</span>
                       )}
                     </p>
-                    <div className="pl-15 text-xs text-muted-foreground">
+                    <div className="w-full border-t border-border/50 pt-2 text-xs text-muted-foreground sm:w-auto sm:border-t-0 sm:pl-4 sm:pt-0 lg:pl-15">
                       <p className="grid grid-cols-[10ch_auto] items-baseline gap-x-5 text-white">
                         <span>MY TIME</span>
                         <span className="font-digital">{timeInfo?.localTime ?? "--:--"}</span>

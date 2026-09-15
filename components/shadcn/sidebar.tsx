@@ -31,6 +31,7 @@ const SIDEBAR_WIDTH = "13rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
+const SIDEBAR_COLLAPSE_BREAKPOINT = 1340
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
@@ -87,6 +88,19 @@ function SidebarProvider({
     },
     [setOpenProp, open]
   )
+
+  React.useEffect(() => {
+    if (openProp !== undefined) return
+
+    const mediaQuery = window.matchMedia(`(max-width: ${SIDEBAR_COLLAPSE_BREAKPOINT}px)`)
+    const updateSidebarState = (matches: boolean) => _setOpen(!matches)
+
+    updateSidebarState(mediaQuery.matches)
+    const handleChange = (event: MediaQueryListEvent) => updateSidebarState(event.matches)
+    mediaQuery.addEventListener("change", handleChange)
+
+    return () => mediaQuery.removeEventListener("change", handleChange)
+  }, [openProp])
 
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
