@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { runMaintenanceSeed } from "@/db/seeds";
+import { revalidatePath } from "next/cache";
 
 export async function GET(request: Request) {
   try {
@@ -15,6 +16,8 @@ export async function GET(request: Request) {
     const result = await runMaintenanceSeed(db, year, (message) => {
       console.log(`[cron-seed] ${message}`);
     });
+
+    revalidatePath("/", "layout");
 
     return NextResponse.json({
       success: true,
