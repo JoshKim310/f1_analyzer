@@ -71,7 +71,7 @@ export async function getNextRaceInfo(): Promise<NextRaceInfo | null> {
   const meetings = await getMeetingsByYear(year);
   const races = getChampionshipRaces(meetings);
   const now = new Date();
-  const nextMeeting = races.find((m) => new Date(m.date_start) > now);
+  const nextMeeting = races.find((m) => new Date(m.date_end) > now);
 
   if (!nextMeeting) {
     return null;
@@ -93,7 +93,7 @@ export async function getRaceProgressInfo(year = new Date().getFullYear()): Prom
   const races = getChampionshipRaces(meetings);
 
     const completedRaces = races
-    .filter((m) => new Date(m.date_start) < now).length;
+    .filter((m) => new Date(m.date_end) < now).length;
 
   const totalRaces = races.length;
 
@@ -118,7 +118,7 @@ export async function getRecentRaceResults(
 
   const completedWithRounds = racesAscending
     .map((race, index) => ({ race, round: index + 1 }))
-    .filter(({ race }) => new Date(race.date_start) < now);
+    .filter(({ race }) => new Date(race.date_end) < now);
 
   const recent = completedWithRounds
     .sort(
@@ -200,7 +200,7 @@ export async function getUpcomingRaces(
 
   const upcoming = racesAscending
     .map((race, index) => ({ race, round: index + 1 }))
-    .filter(({ race }) => new Date(race.date_start) > now)
+    .filter(({ race }) => new Date(race.date_end) > now)
     .slice(0, limit ?? undefined);
   
   return (

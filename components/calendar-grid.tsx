@@ -137,14 +137,14 @@ export function CalendarGrid({
   const filteredRecentResults = recentResults.filter((race) => race.year === selectedYear);
   const filteredUpcomingRaces = upcomingRaces.filter((race) => race.year === selectedYear);
   const grandPrixCards = buildCalendarCards(filteredRecentResults, filteredUpcomingRaces);
-  const nextRace = filteredUpcomingRaces.filter((race) => race.dateStart > new Date().toISOString())[0];
+  const nextRace = filteredUpcomingRaces.filter((race) => race.dateEnd > new Date().toISOString())[0];
 
   return (
     <div className="flex flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:px-20">
       <section className="space-y-2">
         <h1 className="font-heading text-3xl tracking-wide">{selectedYear} Race Calendar</h1>
         <p className="font-pixel text-xs uppercase tracking-wide text-white/60 py-4">
-          {filteredRecentResults.length + "/" +grandPrixCards.length} races
+          {filteredRecentResults.length + 1 + "/" +grandPrixCards.length} races
         </p>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
