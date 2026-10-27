@@ -1,5 +1,5 @@
 import { getConstructorStandingsLatest } from "@/db/repositories/constructor-standings-latest.repository";
-import { getDriversLatest } from "@/db/repositories/driver-latest.repository";
+import { getDriversCurrentSeason } from "@/db/repositories/driver-latest.repository";
 import { getDriverStandingsLatest } from "@/db/repositories/drivers-standings-latest.repository";
 import { getRaceWinnerBySessionKey } from "@/db/repositories/session-results.repository";
 import { getCompletedRacesCurrentYear } from "@/db/repositories/sessions.repository";
@@ -32,7 +32,7 @@ export type CurrentStandings = {
 export async function getCurrentStandings(): Promise<CurrentStandings> {
   const driverChampionshipData = await getDriverStandingsLatest();
   const constructorChampionshipData = await getConstructorStandingsLatest();
-  const driverData = await getDriversLatest();
+  const driverData = await getDriversCurrentSeason();
   const completedRaces = await getCompletedRacesCurrentYear();
 
   // Gets the session winner for each completed race
@@ -57,9 +57,14 @@ export async function getCurrentStandings(): Promise<CurrentStandings> {
   }
 
   // create lookups
-  const driverMap = new Map(
-    driverData.map((d) => [d.driver_number, d])
-  );
+  const driverMap = new Map<number, (typeof driverData)[0]>();
+
+  for (const driver of driverData) {
+    if (!driverMap.has(driver.driver_number)) {
+      driverMap.set(driver.driver_number, driver);
+    }
+  }
+
   const teamColorMap = new Map(
     driverData.map((d) => [d.team_name, d.team_colour])
   );
