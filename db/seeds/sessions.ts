@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { sessions } from "../schema";
 import { openF1Fetch } from "./openf1";
 import type { SeedContext } from "./types";
@@ -53,8 +54,22 @@ async function insertSessionRows(db: SeedContext["db"], rows: ReturnType<typeof 
     await db
       .insert(sessions)
       .values(chunk)
-      .onConflictDoNothing({
+      .onConflictDoUpdate({
         target: sessions.session_key,
+        set: {
+          circuit_key: sql`excluded.circuit_key`,
+          circuit_short_name: sql`excluded.circuit_short_name`,
+          country_code: sql`excluded.country_code`,
+          country_name: sql`excluded.country_name`,
+          date_start: sql`excluded.date_start`,
+          date_end: sql`excluded.date_end`,
+          gmt_offset: sql`excluded.gmt_offset`,
+          location: sql`excluded.location`,
+          meeting_key: sql`excluded.meeting_key`,
+          session_name: sql`excluded.session_name`,
+          session_type: sql`excluded.session_type`,
+          year: sql`excluded.year`,
+        },
       });
   }
 }

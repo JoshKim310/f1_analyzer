@@ -1,5 +1,5 @@
 import { meetings } from "../schema";
-import { and, eq, inArray, lt } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { openF1Fetch } from "./openf1";
 import type { SeedContext } from "./types";
 
@@ -16,6 +16,7 @@ type OpenF1Meetings = {
   date_end: string | null;
   date_start: string | null;
   gmt_offset: string | null;
+  is_cancelled: boolean | null;
   location: string | null;
   meeting_name: string | null;
   meeting_official_name: string | null;
@@ -47,6 +48,7 @@ async function insertMeetingRows(
     date_end: string;
     date_start: string;
     gmt_offset: string;
+    is_cancelled: boolean;
     location: string;
     meeting_name: string;
     meeting_official_name: string;
@@ -57,8 +59,26 @@ async function insertMeetingRows(
     await db
       .insert(meetings)
       .values(chunk)
-      .onConflictDoNothing({
+      .onConflictDoUpdate({
         target: [meetings.meeting_key],
+        set: {
+          circuit_key: sql`excluded.circuit_key`,
+          circuit_image: sql`excluded.circuit_image`,
+          circuit_info_url: sql`excluded.circuit_info_url`,
+          circuit_short_name: sql`excluded.circuit_short_name`,
+          circuit_type: sql`excluded.circuit_type`,
+          country_code: sql`excluded.country_code`,
+          country_flag: sql`excluded.country_flag`,
+          country_name: sql`excluded.country_name`,
+          date_end: sql`excluded.date_end`,
+          date_start: sql`excluded.date_start`,
+          gmt_offset: sql`excluded.gmt_offset`,
+          is_cancelled: sql`excluded.is_cancelled`,
+          location: sql`excluded.location`,
+          meeting_name: sql`excluded.meeting_name`,
+          meeting_official_name: sql`excluded.meeting_official_name`,
+          year: sql`excluded.year`,
+        },
       });
   }
 }
@@ -89,6 +109,7 @@ export async function seedMeetingsFullHistory({ db, log }: Omit<SeedContext, "ye
       date_end: row.date_end ?? "",
       date_start: row.date_start ?? "",
       gmt_offset: row.gmt_offset ?? "",
+      is_cancelled: row.is_cancelled ?? false,
       location: row.location ?? "",
       meeting_name: row.meeting_name ?? "",
       meeting_official_name: row.meeting_official_name ?? "",
@@ -135,6 +156,7 @@ export async function seedMeetings({ db, log }: SeedContext) {
     date_end: row.date_end ?? "",
     date_start: row.date_start ?? "",
     gmt_offset: row.gmt_offset ?? "",
+    is_cancelled: row.is_cancelled ?? false,
     location: row.location ?? "",
     meeting_name: row.meeting_name ?? "",
     meeting_official_name: row.meeting_official_name ?? "",

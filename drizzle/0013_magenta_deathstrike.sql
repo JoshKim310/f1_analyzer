@@ -1,0 +1,1 @@
+ALTER TABLE "sessions" ALTER COLUMN "circuit_short_name" SET DATA TYPE varchar(50);

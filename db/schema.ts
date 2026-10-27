@@ -32,7 +32,7 @@ export const sessions = pgTable(
   {
     session_key: integer("session_key").primaryKey().notNull(),
     circuit_key: integer("circuit_key"),
-    circuit_short_name: varchar("circuit_short_name", { length: 20 }),
+    circuit_short_name: varchar("circuit_short_name", { length: 50 }),
     country_code: varchar("country_code", { length: 3 }),
     country_name: varchar("country_name", { length: 50 }),
     date_start: varchar("date_start", { length: 50 }),
@@ -111,6 +111,7 @@ export const meetings = pgTable(
     date_end: varchar("date_end", { length: 50 }).notNull(),
     date_start: varchar("date_start", { length: 50 }).notNull(),
     gmt_offset: varchar("gmt_offset", { length: 10 }).notNull(),
+    is_cancelled: boolean("is_cancelled").default(false).notNull(),
     location: varchar("location", { length: 50 }).notNull(),
     meeting_name: varchar("meeting_name", { length: 100 }).notNull(),
     meeting_official_name: varchar("meeting_official_name", { length: 255 }).notNull(),

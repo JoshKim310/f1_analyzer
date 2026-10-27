@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { drivers } from "../schema";
 import { openF1Fetch } from "./openf1";
 import type { SeedContext } from "./types";
@@ -45,8 +46,20 @@ async function insertDriverRows(db: SeedContext["db"], rows: ReturnType<typeof m
     await db
       .insert(drivers)
       .values(chunk)
-      .onConflictDoNothing({
-        target: [drivers.driver_number, drivers.session_key],
+      .onConflictDoUpdate({
+        target: [
+          drivers.driver_number,
+          drivers.session_key
+        ],
+        set: {
+          first_name: sql`excluded.first_name`,
+          last_name: sql`excluded.last_name`,
+          team_name: sql`excluded.team_name`,
+          team_colour: sql`excluded.team_colour`,
+          headshot_url: sql`excluded.headshot_url`,
+          name_acronym: sql`excluded.name_acronym`,
+          meeting_key: sql`excluded.meeting_key`,
+        },
       });
   }
 }
