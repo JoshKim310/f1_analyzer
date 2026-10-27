@@ -1,5 +1,4 @@
-import { getChampionshipRaces } from "./currentSeasonExceptions";
-import { getMeetingsByYear } from "@/db/repositories/meetings.repository";
+import { getMeetingsByYear, getChampionshipMeetingsByYear } from "@/db/repositories/meetings.repository";
 import { getRaceByMeetingKey } from "@/db/repositories/sessions.repository";
 import { getSessionResults } from "@/db/repositories/session-results.repository";
 import { getDriversBySessionKey } from "@/db/repositories/drivers.repository";
@@ -68,8 +67,7 @@ function toNumber(value: string | number | null | undefined): number | undefined
 
 export async function getNextRaceInfo(): Promise<NextRaceInfo | null> {
   const year = new Date().getFullYear();
-  const meetings = await getMeetingsByYear(year);
-  const races = getChampionshipRaces(meetings);
+  const races = await getChampionshipMeetingsByYear(year);
   const now = new Date();
   const nextMeeting = races.find((m) => new Date(m.date_end) > now);
 
@@ -87,10 +85,8 @@ export async function getNextRaceInfo(): Promise<NextRaceInfo | null> {
 }
 
 export async function getRaceProgressInfo(year = new Date().getFullYear()): Promise<RaceProgressInfo> {
-  const meetings = await getMeetingsByYear(year);
   const now = new Date();
-
-  const races = getChampionshipRaces(meetings);
+  const races = await getChampionshipMeetingsByYear(year);
 
     const completedRaces = races
     .filter((m) => new Date(m.date_end) < now).length;
@@ -109,10 +105,10 @@ export async function getRecentRaceResults(
   year: number,
   limit?: number
 ): Promise<RecentRaceResult[]> {
-  const meetings = await getMeetingsByYear(year);
+  const meetings = await getChampionshipMeetingsByYear(year);
   const now = new Date();
 
-  const racesAscending = getChampionshipRaces(meetings).sort(
+  const racesAscending = meetings.sort(
     (a, b) => new Date(a.date_start).getTime() - new Date(b.date_start).getTime()
   );
 
@@ -192,9 +188,9 @@ export async function getUpcomingRaces(
   year: number,
   limit?: number
 ): Promise<UpcomingRaceInfo[]> {
-  const meetings = await getMeetingsByYear(year);
+  const meetings = await getChampionshipMeetingsByYear(year);
   const now = new Date();
-  const racesAscending = getChampionshipRaces(meetings).sort(
+  const racesAscending = meetings.sort(
     (a, b) => new Date(a.date_start).getTime() - new Date(b.date_start).getTime()
   );
 
