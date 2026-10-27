@@ -47,6 +47,21 @@ export type UpcomingRaceInfo = {
   circuitShortName: string;
 };
 
+export type TestingRaceInfo = {
+  year: number;
+  countryName: string;
+  countryFlag: string;
+  dateStart: string;
+  dateEnd: string;
+  grandPrixName: string;
+  circuitImage: string;
+  circuitShortName: string;
+  location: string;
+  meetingName: string;
+  meetingOfficialName: string;
+  isCancelled: boolean;
+};
+
 function formatDuration(seconds: number) {
   const hrs = Math.floor(seconds / 3600);
   const mins = Math.floor((seconds % 3600) / 60);
@@ -211,6 +226,38 @@ export async function getUpcomingRaces(
         grandPrixName: race.meeting_official_name,
         circuitImage: race.circuit_image,
         circuitShortName: race.circuit_short_name,
+      }
+    })
+  );
+}
+
+export async function getTestingRaces(
+  year: number,
+): Promise<TestingRaceInfo[]> {
+  const meetings = await getMeetingsByYear(year);
+  const racesAscending = meetings.sort(
+    (a, b) => new Date(a.date_start).getTime() - new Date(b.date_start).getTime()
+  );
+
+  const testing = racesAscending.filter(
+    (race) => race.meeting_name === "Pre-Season Testing"
+  );
+
+  return (
+    testing.map( (race) => {
+      return {
+        year,
+        countryName: race.country_name,
+        countryFlag: race.country_flag,
+        dateStart: race.date_start,
+        dateEnd: race.date_end,
+        grandPrixName: race.meeting_official_name,
+        circuitImage: race.circuit_image,
+        circuitShortName: race.circuit_short_name,
+        location: race.location,
+        meetingName: race.meeting_name,
+        meetingOfficialName: race.meeting_official_name,
+        isCancelled: race.is_cancelled,
       }
     })
   );
