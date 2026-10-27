@@ -1,5 +1,9 @@
 import { CalendarGrid } from "@/components/calendar-grid";
-import { getRecentRaceResults, getUpcomingRaces } from "@/services/sessions-data";
+import {
+  getRecentRaceResults,
+  getTestingRaces,
+  getUpcomingRaces,
+} from "@/services/sessions-data";
 
 export default async function RaceCalendarPage() {
   const currentYear = new Date().getFullYear();
@@ -9,13 +13,21 @@ export default async function RaceCalendarPage() {
     Promise.all(years.map((year) => getRecentRaceResults(year))),
     Promise.all(years.map((year) => getUpcomingRaces(year))),
   ]);
+  const testingRacesByYear = await Promise.all(
+    years.map((year) => getTestingRaces(year))
+  );
 
   const recentResults = recentResultsByYear.flat();
   const upcomingRaces = upcomingRacesByYear.flat();
+  const testingRaces = testingRacesByYear.flat();
 
   return (
     <div>
-      <CalendarGrid recentResults={recentResults} upcomingRaces={upcomingRaces} />
+      <CalendarGrid
+        recentResults={recentResults}
+        upcomingRaces={upcomingRaces}
+        testingRaces={testingRaces}
+      />
     </div>
   );
 }

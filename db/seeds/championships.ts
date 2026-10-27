@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { constructor_championships, driver_championships } from "../schema";
 import { openF1Fetch } from "./openf1";
 import type { DbClient } from "./types";
@@ -78,8 +79,18 @@ async function insertDriverChampionshipRows(db: DbClient, rows: OpenF1DriverCham
     await db
       .insert(driver_championships)
       .values(chunk)
-      .onConflictDoNothing({
-        target: [driver_championships.session_key, driver_championships.driver_number],
+      .onConflictDoUpdate({
+        target: [
+          driver_championships.session_key,
+          driver_championships.driver_number
+        ],
+        set: {
+          meeting_key: sql`excluded.meeting_key`,
+          points_current: sql`excluded.points_current`,
+          points_start: sql`excluded.points_start`,
+          position_current: sql`excluded.position_current`,
+          position_start: sql`excluded.position_start`,
+        },
       });
   }
 }
@@ -98,8 +109,18 @@ async function insertConstructorChampionshipRows(db: DbClient, rows: Constructor
     await db
       .insert(constructor_championships)
       .values(chunk)
-      .onConflictDoNothing({
-        target: [constructor_championships.session_key, constructor_championships.team_name],
+      .onConflictDoUpdate({
+        target: [
+          constructor_championships.session_key,
+          constructor_championships.team_name
+        ],
+        set: {
+          meeting_key: sql`excluded.meeting_key`,
+          points_current: sql`excluded.points_current`,
+          points_start: sql`excluded.points_start`,
+          position_current: sql`excluded.position_current`,
+          position_start: sql`excluded.position_start`,
+        },
       });
   }
 }

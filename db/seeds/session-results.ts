@@ -1,5 +1,5 @@
 import { session_results, sessions } from "../schema";
-import { and, eq, inArray, lt } from "drizzle-orm";
+import { and, eq, inArray, lt, sql } from "drizzle-orm";
 import { openF1Fetch } from "./openf1";
 import type { SeedContext, YearSeedContext } from "./types";
 
@@ -63,8 +63,21 @@ async function insertSessionResultRows(
     await db
       .insert(session_results)
       .values(chunk)
-      .onConflictDoNothing({
-        target: [session_results.session_key, session_results.driver_number],
+      .onConflictDoUpdate({
+        target: [
+          session_results.session_key,
+          session_results.driver_number
+        ],
+        set: {
+          dnf: sql`excluded.dnf`,
+          dns: sql`excluded.dns`,
+          dsq: sql`excluded.dsq`,
+          duration: sql`excluded.duration`,
+          gap_to_leader: sql`excluded.gap_to_leader`,
+          number_of_laps: sql`excluded.number_of_laps`,
+          meeting_key: sql`excluded.meeting_key`,
+          position: sql`excluded.position`,
+        },
       });
   }
 }
@@ -117,13 +130,7 @@ export async function seedSessionResults({ db, year, log }: YearSeedContext) {
     return { inserted: 0 };
   }
 
-  const existing = await db
-    .select({ session_key: session_results.session_key })
-    .from(session_results)
-    .where(inArray(session_results.session_key, sessionRows.map((s) => s.session_key)));
-
-  const seededSessionKeys = new Set(existing.map((row) => row.session_key));
-  const pendingSessions = sessionRows.filter((row) => !seededSessionKeys.has(row.session_key));
+  const pendingSessions = sessionRows;
 
   if (pendingSessions.length === 0) {
     log(`session_results: all ${sessionRows.length} sessions already seeded for ${year}`);

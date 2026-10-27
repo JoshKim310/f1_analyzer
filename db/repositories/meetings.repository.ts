@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { db } from "@/db";
 import { meetings } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, not } from "drizzle-orm";
 
 type Meeting = {
   meeting_key: number;
@@ -16,6 +16,7 @@ type Meeting = {
   date_end: string;
   date_start: string;
   gmt_offset: string;
+  is_cancelled: boolean;
   location: string;
   meeting_name: string;
   meeting_official_name: string;
@@ -70,5 +71,20 @@ export const getMeetingsByYear = cache(async (year: number): Promise<Meeting[]> 
     .from(meetings)
     .where(eq(meetings.year, year));
 
+  return meetingsByYear.map(applyMeetingRules);
+});
+
+export const getChampionshipMeetingsByYear = cache(async (year: number) => {
+  const meetingsByYear = await db
+    .select()
+    .from(meetings)
+    .where(
+      and(
+        eq(meetings.year, year),
+        eq(meetings.is_cancelled, false),
+        not(eq(meetings.meeting_name, "Pre-Season Testing"))
+      )
+    );
+  
   return meetingsByYear.map(applyMeetingRules);
 });

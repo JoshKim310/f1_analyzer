@@ -85,6 +85,20 @@
       "when": 1776324517849,
       "tag": "0011_wandering_pixie",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793093459139,
+      "tag": "0012_confused_sphinx",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793094225738,
+      "tag": "0013_magenta_deathstrike",
+      "breakpoints": true
     }
   ]
 }
