@@ -16,7 +16,7 @@ type OpenF1SessionResult = {
   duration: number | string | null;
   gap_to_leader: number | string | null;
   number_of_laps: number | null;
-  position: number | null;
+  position: number | string | null;
   meeting_key?: number | null;
   session_key?: number | null;
 };
@@ -30,6 +30,10 @@ function toDecimal3(value: number | string | null | undefined) {
   if (!Number.isFinite(parsed)) return null;
 
   return parsed.toFixed(3);
+}
+
+function normalizePosition(value: number | string | null | undefined) {
+  return typeof value === "number" ? value : null;
 }
 
 function chunkArray<T>(rows: T[], chunkSize: number) {
@@ -84,7 +88,7 @@ export async function seedSessionResultsFullHistory({ db, log }: Omit<SeedContex
       gap_to_leader: toDecimal3(row.gap_to_leader),
       number_of_laps: row.number_of_laps,
       meeting_key: row.meeting_key ?? null,
-      position: row.position,
+      position: normalizePosition(row.position),
       session_key: row.session_key as number,
     }));
 
@@ -174,7 +178,7 @@ export async function seedSessionResults({ db, year, log }: YearSeedContext) {
         gap_to_leader: toDecimal3(row.gap_to_leader),
         number_of_laps: row.number_of_laps,
         meeting_key: session.meeting_key,
-        position: row.position,
+        position: normalizePosition(row.position),
         session_key: session.session_key,
       }))
     );
