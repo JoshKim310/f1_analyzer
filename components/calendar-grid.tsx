@@ -171,7 +171,7 @@ export function CalendarGrid({
       <section className="space-y-2">
         <h1 className="font-heading text-3xl tracking-wide">{selectedYear} Race Calendar</h1>
         <p className="font-pixel text-xs uppercase tracking-wide text-white/60 py-4">
-          {filteredRecentResults.length + 1 + "/" + (grandPrixCards.length - filteredTestingRaces.length)} races
+          {filteredRecentResults.length + "/" + (grandPrixCards.length - filteredTestingRaces.length)} races
         </p>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>

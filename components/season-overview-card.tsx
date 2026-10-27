@@ -40,7 +40,7 @@ export function SeasonOverviewCard({
   upcomingRaces: UpcomingRaceInfo[];
 }) {
     const { completedRaces, totalRaces } = raceProgress;
-    const currentRound = totalRaces === 0 ? 0 : Math.min(completedRaces + 1, totalRaces);
+    const currentRound = totalRaces === 0 ? 0 : Math.min(completedRaces, totalRaces);
     const progressPercent = totalRaces === 0 ? 0 : (currentRound / totalRaces) * 100;
 
     return (
