@@ -57,64 +57,64 @@ return (
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-    <div className="grid gap-3 px-4 sm:grid-cols-2 sm:px-8">
+    <div className="grid gap-3 px-4 min-[1260px]:grid-cols-2 sm:px-8">
         {drivers.map((driver) => {
           const teamColor = getTeamColor(driver.teamColor);
 
           return (
             <div
               key={driver.driverNumber}
-              className="flex items-center justify-between gap-4 rounded-lg border bg-muted/20 px-3 py-3 transition-colors hover:bg-muted/40 sm:px-4"
+              className="flex min-w-0 items-center justify-between gap-2 rounded-lg border bg-muted/20 px-2 py-2 transition-colors hover:bg-muted/40 min-[550px]:gap-4 min-[550px]:px-3 min-[550px]:py-3 sm:px-4"
               style={{
                 borderColor: withAlpha(teamColor, 0.22),
                 background: `linear-gradient(90deg, ${withAlpha(teamColor, 0.12)} 0%, transparent 42%)`,
               }}
             >
-            <div className="flex min-w-0 items-center gap-3">
-              <span className="w-6 shrink-0 text-center font-digital text-sm text-muted-foreground">
+            <div className="flex min-w-0 items-center gap-2 min-[550px]:gap-3">
+              <span className="w-4 shrink-0 text-center font-digital text-[11px] text-muted-foreground min-[550px]:w-6 min-[550px]:text-sm">
                 {driver.positionCurrent}
               </span>
               <div
-                className="h-10 w-1 shrink-0 rounded-full"
+                className="h-8 w-1 shrink-0 rounded-full min-[550px]:h-10"
                 style={{
                   backgroundColor: teamColor,
                   boxShadow: `0 0 12px ${withAlpha(teamColor, 0.55)}`,
                 }}
               />
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="flex min-w-0 items-center gap-3">
+              <div className="flex min-w-0 items-center gap-1.5 min-[550px]:gap-3">
+                <div className="flex min-w-0 items-center gap-1.5 min-[550px]:gap-3">
                   {driver.headshotUrl ? (
                     <img
                       src={driver.headshotUrl}
                       alt={driver.fullName}
-                      className="-my-2 h-20 w-20 shrink-0 rounded-full object-cover object-top"
+                      className="-my-1 h-10 w-10 shrink-0 rounded-full object-cover object-top min-[550px]:-my-2 min-[550px]:h-20 min-[550px]:w-20"
                     />
                   ) : (
-                    <div className="-my-2 h-20 w-20 shrink-0 rounded-full bg-muted" />
+                    <div className="-my-1 h-10 w-10 shrink-0 rounded-full bg-muted min-[550px]:-my-2 min-[550px]:h-20 min-[550px]:w-20" />
                   )}
                   <div className="min-w-0">
-                    <p className="truncate font-heading text-base sm:text-lg">
+                    <p className="truncate font-heading text-xs min-[550px]:text-base sm:text-lg">
                       {driver.fullName}
                     </p>
-                    <p className="truncate text-sm text-muted-foreground">
+                    <p className="truncate text-[11px] text-muted-foreground min-[550px]:text-sm">
                       {driver.teamName}
                     </p>
                   </div>
                 </div>
-                <span className="ml-2 w-10 shrink-0 text-center font-digital text-2xl text-muted-foreground">
+                <span className="ml-0.5 w-7 shrink-0 text-center font-digital text-lg text-muted-foreground min-[550px]:ml-2 min-[550px]:w-10 min-[550px]:text-2xl">
                   {driver.driverNumber}
                 </span>
               </div>
             </div>
-            <div className="flex shrink-0 items-center gap-4 text-right sm:gap-8">
+            <div className="flex shrink-0 items-center gap-2 text-right min-[550px]:gap-4 sm:gap-8">
               <div>
-                <p className="font-digital text-lg text-white">{driver.wins}</p>
+                <p className="font-digital text-sm text-white min-[550px]:text-lg">{driver.wins}</p>
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
                   Wins
                 </p>
               </div>
-              <div className="w-10">
-                <p className="font-digital text-lg text-white">{driver.points}</p>
+              <div className="w-8 min-[550px]:w-10">
+                <p className="font-digital text-sm text-white min-[550px]:text-lg">{driver.points}</p>
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
                   Pts
                 </p>
