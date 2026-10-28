@@ -1,22 +1,32 @@
+import { ConstructorsTable } from "@/components/constructors-table";
+import {
+  getConstructorStandings,
+  getCurrentStandings,
+  getDriverStandings,
+} from "@/services/standings";
+
 export default async function ConstructorsPage() {
+  const { constructors, drivers } = await getCurrentStandings();
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 2023 + 1 }, (_, index) => 2023 + index);
+  const [constructorsByYear, driversByYear] = await Promise.all([
+    Object.fromEntries(
+      await Promise.all(years.map(async (year) => [year, await getConstructorStandings(year)] as const))
+    ),
+    Object.fromEntries(
+      await Promise.all(years.map(async (year) => [year, await getDriverStandings(year)] as const))
+    ),
+  ]);
+
   return (
-    <div className="flex min-h-[60vh] items-center justify-center p-8">
-      <div className="w-full max-w-xl rounded-xl border border-border bg-card p-8 text-center shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-f1-red">
-          Constructors
-        </p>
-        <h1 className="mt-3 font-heading text-3xl">Page Under Progress</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          This section is currently in development. Check back soon for the full constructors experience.
-        </p>
-        <img 
-          src="/soft-tire.png"
-          alt="Soft Tire"
-          width={100}
-          height={100}
-          className="animate-spin [animation-duration:4s] mx-auto mt-6"
-        />
-      </div>
+    <div className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
+      <ConstructorsTable
+        constructors={constructors}
+        drivers={drivers}
+        constructorsByYear={constructorsByYear}
+        driversByYear={driversByYear}
+        years={years}
+      />
     </div>
   )
 }

@@ -1,9 +1,12 @@
-import { getConstructorStandingsLatest } from "@/db/repositories/constructor-standings-latest.repository";
+import {
+  getConstructorStandingsByYear,
+  getConstructorStandingsLatest,
+} from "@/db/repositories/constructor-standings.repository";
 import {
   getDriversBySeason,
   getDriversCurrentSeason,
 } from "@/db/repositories/driver-latest.repository";
-import { getDriverStandingsByYear, getDriverStandingsLatest } from "@/db/repositories/drivers-standings-latest.repository";
+import { getDriverStandingsByYear, getDriverStandingsLatest } from "@/db/repositories/drivers-standings.repository";
 import { getRaceWinnerBySessionKey } from "@/db/repositories/session-results.repository";
 import { getCompletedRacesByYear, getCompletedRacesCurrentYear } from "@/db/repositories/sessions.repository";
 
@@ -73,6 +76,22 @@ export async function getDriverStandings(year: number): Promise<DriverStanding[]
       headshotUrl: driver?.headshot_url ?? "",
     };
   });
+}
+
+export async function getConstructorStandings(year: number): Promise<ConstructorStanding[]> {
+  const [constructorData, drivers] = await Promise.all([
+    getConstructorStandingsByYear(year),
+    getDriverStandings(year),
+  ]);
+  const teamColorMap = new Map(drivers.map((driver) => [driver.teamName, driver.teamColor]));
+
+  return constructorData.map((standing) => ({
+    teamName: standing.team_name ?? "",
+    positionCurrent: standing.position_current ?? 0,
+    positionStart: standing.position_start ?? 0,
+    points: standing.points_current ?? 0,
+    teamColor: teamColorMap.get(standing.team_name ?? "") ?? "",
+  }));
 }
 
 export async function getCurrentStandings(): Promise<CurrentStandings> {

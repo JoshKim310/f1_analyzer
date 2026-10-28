@@ -40,7 +40,8 @@ const drivers = standingsByYear[selectedYear] ?? [];
 
 return (
   <>
-    <div className="flex justify-start px-4 sm:px-8">
+    <div className="flex flex-col items-start gap-5 px-4 sm:px-8">
+      <h1 className="font-heading text-3xl tracking-wide">{selectedYear} Drivers</h1>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="lg" className="h-8 gap-1.5 px-2.5 text-sm">
