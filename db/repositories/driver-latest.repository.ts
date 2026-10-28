@@ -17,6 +17,10 @@ export const getDriversLatest = cache(async () => {
 });
 
 export const getDriversCurrentSeason = cache(async () => {
+  return getDriversBySeason(new Date().getFullYear());
+});
+
+export const getDriversBySeason = cache(async (year: number) => {
   return db
     .select({
       driver_number: drivers.driver_number,
@@ -25,6 +29,7 @@ export const getDriversCurrentSeason = cache(async () => {
       team_name: drivers.team_name,
       team_colour: drivers.team_colour,
       name_acronym: drivers.name_acronym,
+      headshot_url: drivers.headshot_url,
       session_key: drivers.session_key,
     })
     .from(drivers)
@@ -32,8 +37,6 @@ export const getDriversCurrentSeason = cache(async () => {
       sessions,
       eq(drivers.session_key, sessions.session_key)
     )
-    .where(sql`
-      ${sessions.year} = extract(year from now())::int
-    `)
+    .where(eq(sessions.year, year))
     .orderBy(desc(sql`${sessions.date_start}::timestamptz`));
 });

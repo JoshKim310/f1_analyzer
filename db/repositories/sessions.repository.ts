@@ -16,6 +16,10 @@ export const getRaceByMeetingKey = cache(async (meetingKey: number) => {
 });
 
 export const getCompletedRacesCurrentYear = cache(async () => {
+  return getCompletedRacesByYear(new Date().getFullYear());
+});
+
+export const getCompletedRacesByYear = cache(async (year: number) => {
     return db
     .select({
       session_key: sessions.session_key,
@@ -23,7 +27,7 @@ export const getCompletedRacesCurrentYear = cache(async () => {
     .from(sessions)
     .where(
       sql`
-        ${sessions.year} = extract(year from now())::int
+        ${sessions.year} = ${year}
         and ${sessions.session_name} = 'Race'
         and ${sessions.date_end}:: timestamptz < now()
       `
