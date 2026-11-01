@@ -1,11 +1,11 @@
 "use client"
-import { NextRaceInfo } from "@/services/sessions-data"
+import { UpcomingRaceInfo } from "@/services/sessions-data"
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { Calendar } from "lucide-react"
 
 type HeaderProps = {
-  nextRace: NextRaceInfo | null
+  nextRace: UpcomingRaceInfo | null
   initialNow: number
 }
 

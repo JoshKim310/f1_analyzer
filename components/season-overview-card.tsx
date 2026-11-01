@@ -3,22 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./shadcn/card";
 import { Calendar } from "lucide-react";
 import type { RaceProgressInfo, RecentRaceResult, UpcomingRaceInfo } from "@/services/sessions-data";
 import Image from "next/image";
-
-function formatRaceDateRange(dateStartIso: string, dateEndIso: string) {
-  const start = new Date(dateStartIso);
-  const end = new Date(dateEndIso);
-
-  const startDay = new Intl.DateTimeFormat("en-GB", { day: "numeric" }).format(start);
-  const endDay = new Intl.DateTimeFormat("en-GB", { day: "numeric" }).format(end);
-  const startMonth = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(start);
-  const endMonth = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(end);
-
-  if (startMonth === endMonth) {
-    return `${startDay}-${endDay} ${startMonth}`;
-  }
-
-  return `${startDay} ${startMonth} - ${endDay} ${endMonth}`;
-}
+import { formatRaceDateRange } from "@/lib/date-utils";
 
 function getOrdinal(position: number) {
   if (position === 1) return "1ST";
