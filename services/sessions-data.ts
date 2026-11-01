@@ -3,14 +3,6 @@ import { getRaceByMeetingKey } from "@/db/repositories/sessions.repository";
 import { getSessionResults } from "@/db/repositories/session-results.repository";
 import { getDriversBySessionKey } from "@/db/repositories/drivers.repository";
 
-export type NextRaceInfo = {
-  meeting_name: string;
-  countryName: string;
-  countryFlag: string;
-  dateStart: string;
-  gmtOffset: string;
-}
-
 export type RaceProgressInfo = {
   year: number;
   totalRaces: number;
@@ -45,6 +37,8 @@ export type UpcomingRaceInfo = {
   grandPrixName: string;
   circuitImage: string;
   circuitShortName: string;
+  gmtOffset: string;
+  meetingName: string;
 };
 
 export type TestingRaceInfo = {
@@ -78,25 +72,6 @@ function toNumber(value: string | number | null | undefined): number | undefined
   if (value == null) return undefined;
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-export async function getNextRaceInfo(): Promise<NextRaceInfo | null> {
-  const year = new Date().getFullYear();
-  const races = await getChampionshipMeetingsByYear(year);
-  const now = new Date();
-  const nextMeeting = races.find((m) => new Date(m.date_end) > now);
-
-  if (!nextMeeting) {
-    return null;
-  }
-
-  return {
-    meeting_name: nextMeeting.meeting_name,
-    countryName: nextMeeting.country_name,
-    countryFlag: nextMeeting.country_flag,
-    dateStart: nextMeeting.date_start,
-    gmtOffset: nextMeeting.gmt_offset,
-  };
 }
 
 export async function getRaceProgressInfo(year = new Date().getFullYear()): Promise<RaceProgressInfo> {
@@ -226,9 +201,17 @@ export async function getUpcomingRaces(
         grandPrixName: race.meeting_official_name,
         circuitImage: race.circuit_image,
         circuitShortName: race.circuit_short_name,
+        gmtOffset: race.gmt_offset,
+        meetingName: race.meeting_name,
       }
     })
   );
+}
+
+export async function getNextRace(): Promise<UpcomingRaceInfo> {
+  const currentYear = new Date().getFullYear();
+  const upcomingRaces = await getUpcomingRaces(currentYear);
+  return upcomingRaces[0];
 }
 
 export async function getTestingRaces(

@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/shad
 import { AppSidebar } from "@/components/app-sidebar";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { getNextRaceInfo } from "@/services/sessions-data";
+import { getNextRace } from "@/services/sessions-data";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -29,7 +29,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const nextRace = await getNextRaceInfo();
+  const nextRace = await getNextRace();
   const initialNow = Date.now();
   return (
     <html lang="en">
